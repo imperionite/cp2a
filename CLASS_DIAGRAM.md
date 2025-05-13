@@ -4,6 +4,143 @@ Homework #1: MotorPH Class Diagram
 
 This backend REST API system is composed of multiple layers of components, classes, and even sub-classes, primarily designed to meet the [initial requirements outlined in Phase 1](https://sites.google.com/mmdc.mcl.edu.ph/motorph/home) of the CP1 project. These include the basic presentation of employee details and the automatic calculation of salaries based on hours worked and standard deductions.
 
+This architecture ensures clean separation of concerns, maintainable code, and clear responsibility boundaries between components.
+
+
+## Overview of the Application's Layers:
+
+| Layer | Purpose | Key Components | Responsibilities |
+| --- | --- | --- | --- |
+| Entity Layer | Data Model | User, Employee, Attendance | • Defines data structures
+• Handles JPA annotations
+• Manages relationships
+• Implements validation |
+| Service Layer | Business Logic | UserService, EmployeeService, AttendanceService, SalaryService, DeductionsService | • Implements business rules
+• Handles complex calculations
+• Manages transactions
+• Coordinates between layers |
+| Controller Layer | API Interface | UserController, EmployeeController, AttendanceController, DeductionsController, AuthController | • Handles HTTP requests
+• Manages authentication
+• Processes API responses
+• Routes to appropriate services |
+| Initializer Layer | Data Setup | DataInitializer, AttendanceInitializer | • Loads initial data
+• Sets up admin user
+• Processes CSV files
+• Coordinates initialization order |
+
+```mermaid
+flowchart TD
+    subgraph Client["Client Layer"]
+        HTTP["HTTP Requests"]
+    end
+
+    subgraph Controller["Controller Layer"]
+        direction TB
+        Auth["AuthController"]
+        User["UserController"]
+        Emp["EmployeeController"]
+        Att["AttendanceController"]
+        Ded["DeductionsController"]
+    end
+
+    subgraph Service["Service Layer"]
+        direction TB
+        AuthService["AuthService"]
+        UserService["UserService"]
+        EmpService["EmployeeService"]
+        AttService["AttendanceService"]
+        SalaryService["SalaryService"]
+        DedService["DeductionsService"]
+    end
+
+    subgraph Entity["Entity Layer"]
+        direction TB
+        UserEntity["User"]
+        EmpEntity["Employee"]
+        AttEntity["Attendance"]
+    end
+
+    subgraph Init["Initializer Layer"]
+        direction TB
+        DataInit["DataInitializer"]
+        AttInit["AttendanceInitializer"]
+    end
+
+    %% Controller to Service relationships
+    Auth --> AuthService
+    User --> UserService
+    Emp --> EmpService
+    Att --> AttService
+    Ded --> DedService
+
+    %% Service to Entity relationships
+    AuthService --> UserEntity
+    UserService --> UserEntity
+    EmpService --> EmpEntity
+    EmpService --> UserEntity
+    AttService --> AttEntity
+    AttService --> EmpEntity
+    SalaryService --> EmpEntity
+    DedService --> EmpEntity
+
+    %% Initializer to Service relationships
+    DataInit --> UserService
+    DataInit --> EmpService
+    DataInit --> AttInit
+    AttInit --> AttService
+
+    %% Styling
+    classDef client fill:#f9f,stroke:#333,stroke-width:2px,color:#000
+    classDef controller fill:#bbf,stroke:#333,stroke-width:2px,color:#000
+    classDef service fill:#bfb,stroke:#333,stroke-width:2px,color:#000
+    classDef entity fill:#fbf,stroke:#333,stroke-width:2px,color:#000
+    classDef init fill:#ffb,stroke:#333,stroke-width:2px,color:#000
+
+    class HTTP client
+    class Auth,User,Emp,Att,Ded controller
+    class AuthService,UserService,EmpService,AttService,SalaryService,DedService service
+    class UserEntity,EmpEntity,AttEntity entity
+    class DataInit,AttInit init
+```
+
+
+### Key Elements in Architectural Diagram
+
+### Color Coding
+
+- Pink: Client layer (HTTP requests)
+- Blue: Controller layer (REST endpoints)
+- Green: Service layer (business logic)
+- Purple: Entity layer (data model)
+- Yellow: Initializer layer (data setup)
+
+### Layer Relationships
+
+The arrows in the diagram represent dependencies and data flow:
+
+- Downward arrows show dependencies (e.g., controllers depend on services)
+- Upward arrows show data flow (e.g., services return data to controllers)
+- The initializer layer operates independently but depends on services to perform its tasks
+
+### Key Architectural Features
+
+1. **Layer Separation**  - Each layer has a specific responsibility
+  - Clear boundaries between layers
+  - Single direction of dependencies (top-down)
+
+
+2. **Component Organization**  - Related components are grouped within layers
+  - Each controller has a corresponding service
+  - Services can depend on multiple entities
+  - Initializers coordinate with services for data setup
+
+
+3. **Data Flow**  - HTTP requests enter through controllers
+  - Controllers delegate to appropriate services
+  - Services interact with entities for data persistence
+  - Initializers use services to set up initial data
+
+
 ## Entities
 
 This diagram provides a clear overview of your payroll system's core structure from [CP 1 project](https://github.com/imperionite/cp1) that will eventually adopted to the current project with CP 2, showing how Users, Employees, and Attendance records are related. The relationships shown here will help you understand how data flows through your system and how different components interact.
@@ -177,7 +314,7 @@ Your services are organized into distinct responsibilities:
 
 ## Controllers
 
-The controller layer provides a complete REST API interface for your payroll system, handling all HTTP requests and responses while maintaining proper security and separation of concerns.
+The controller layer provides a complete REST API interface for the system, handling all HTTP requests and responses while maintaining proper security and separation of concerns.
 
 ```mermaid
 classDiagram
@@ -269,3 +406,206 @@ Your controllers are organized into distinct responsibilities:
   - Generates JWT tokens for authenticated users
 
 
+## Repositories
+
+The repository layer provides a solid foundation for the system's data access layer, handling all database operations while maintaining clean separation from your business logic.
+
+```mermaid
+classDiagram
+    class UserRepository {
+        <<Repository>>
+        +Optional~User~ findByUsername(String)
+        +boolean existsByUsername(String)
+    }
+    
+    class EmployeeRepository {
+        <<Repository>>
+        +Optional~Employee~ findByEmployeeNumber(String)
+        +Optional~Employee~ findById(Long)
+        +Optional~Employee~ findByUser(User)
+    }
+    
+    class AttendanceRepository {
+        <<Repository>>
+        +List~Attendance~ findByEmployeeNumberAndDateBetween(String, LocalDate, LocalDate)
+        +List~Attendance~ findByDateBetween(LocalDate, LocalDate)
+        +LocalDate findMinDate()
+        +LocalDate findMaxDate()
+        +List~Attendance~ findByEmployeeNumber(String)
+        +List~Attendance~ findAttendancesForWeek(String, LocalDate, LocalDate)
+        +Optional~Attendance~ findByEmployeeNumberAndDate(String, LocalDate)
+    }
+    
+    UserRepository --> User
+    EmployeeRepository --> Employee
+    AttendanceRepository --> Attendance
+    EmployeeRepository --> User
+
+```
+
+### Notation Explanation
+
+- The `<<Repository>>` stereotype indicates these are Spring Data JPA repository interfaces
+- Arrows (-->) show dependencies between repositories and their corresponding entities
+- Tilde notation (~) in return types (e.g., `Optional~User~`) represents generic types
+- Each repository extends `JpaRepository<T, ID>` where T is the entity type and ID is the primary key type
+
+### Repository Layer Structure
+
+Your repositories are organized to handle data access for each entity:
+
+1. **UserRepository**  - Handles basic user data access
+  - Provides methods for finding users by username
+  - Includes existence check for usernames
+
+
+2. **EmployeeRepository**  - Manages employee data access
+  - Provides methods for finding employees by:
+                    - Employee number
+    - ID
+    - Associated user
+
+
+  - Shows relationship with User entity through `findByUser` method
+
+
+3. **AttendanceRepository**  - Handles attendance record management
+  - Provides comprehensive query methods for:
+                    - Date range filtering
+    - Employee-specific attendance
+    - Date boundary queries (min/max dates)
+    - Weekly attendance calculations
+  - Uses JPQL queries for complex operations
+
+
+## Initializers
+
+The initialization layer provides a robust way to populate database with initial data while maintaining proper separation of concerns and following Spring Boot best practices.
+
+```mermaid
+classDiagram
+    class DataInitializer {
+        -PasswordEncoder encoder
+        -AttendanceInitializer attendanceInitializer
+        -EmployeeRepository employeeRepository
+        -UserRepository userRepository
+        +run(ApplicationArguments)
+        +createAdminUser()
+        +loadEmployeeData()
+        +initializeAttendances()
+        +parseBigDecimal(String)
+    }
+    
+    class AttendanceInitializer {
+        -AttendanceRepository attendanceRepository
+        -EmployeeRepository employeeRepository
+        +initializeAttendances()
+        +loadAttendancesFromCSV(String)
+        +processAttendanceRecord(CSVRecord, DateTimeFormatter)
+        +parseTime(String)
+    }
+    
+    class EmployeeRepository {
+        <<Repository>>
+        +Optional~Employee~ findByEmployeeNumber(String)
+        +Optional~Employee~ findById(Long)
+        +Optional~Employee~ findByUser(User)
+    }
+    
+    class UserRepository {
+        <<Repository>>
+        +Optional~User~ findByUsername(String)
+        +boolean existsByUsername(String)
+    }
+    
+    class Employee {
+        -Long id
+        -String employeeNumber
+        -String lastName
+        -String firstName
+        -LocalDate birthday
+        -String address
+        -String phoneNumber
+        -String sss
+        -String philhealth
+        -String tin
+        -String pagibig
+        -String status
+        -String position
+        -String immediateSupervisor
+        -BigDecimal basicSalary
+        -BigDecimal riceSubsidy
+        -BigDecimal phoneAllowance
+        -BigDecimal clothingAllowance
+        -BigDecimal grossSemiMonthlyRate
+        -BigDecimal hourlyRate
+        -LocalDate createdAt
+        -LocalDate updatedAt
+        -User user
+    }
+    
+    class User {
+        -Long id
+        -String username
+        -String password
+        -Boolean isActive
+        -Boolean isAdmin
+        -Date createdAt
+        -Date updatedAt
+    }
+    
+    class Attendance {
+        -Long id
+        -String employeeNumber
+        -String lastName
+        -String firstName
+        -LocalDate date
+        -LocalTime logIn
+        -LocalTime logOut
+    }
+    
+    DataInitializer --> UserRepository
+    DataInitializer --> EmployeeRepository
+    DataInitializer --> AttendanceInitializer
+    AttendanceInitializer --> AttendanceRepository
+    AttendanceInitializer --> EmployeeRepository
+    EmployeeRepository --> Employee
+    UserRepository --> User
+    Employee --> User
+    Attendance --> Employee
+```
+
+### Notation Explanation
+
+- The `<<Repository>>` stereotype indicates Spring Data JPA repository interfaces
+- Arrows (-->) show dependencies between components
+- Each class shows its key methods and dependencies
+- The diagram includes all related entities (Employee, User, Attendance) to show complete relationships
+
+### Initialization Flow
+
+The diagram shows two main initializer classes:
+
+1. **DataInitializer**  - Primary initializer that runs first (Order = 1)
+  - Depends on both UserRepository and EmployeeRepository
+  - Coordinates the initialization process through three main steps:
+                    - Creates admin user if none exists
+    - Loads employee data from CSV
+    - Initializes attendance data through AttendanceInitializer
+
+
+
+
+2. **AttendanceInitializer**  - Secondary initializer that handles attendance data
+  - Depends on AttendanceRepository and EmployeeRepository
+  - Processes attendance records from CSV files
+  - Called by DataInitializer after employee data is loaded
+
+
+
+### Key Relationships
+
+- DataInitializer manages the overall initialization process and coordinates with AttendanceInitializer
+- Both initializers work with repositories to persist data
+- Repositories handle CRUD operations for their respective entities
+- Entities maintain their relationships (Employee has a User, Attendance belongs to an Employee)
