@@ -1,5 +1,7 @@
 # cp2a
 
+Homework #2: MotorPH Employee App Implementation
+
 ## Entities
 
 This diagram provides a clear overview of your payroll system's core structure from [CP 1 project](https://github.com/imperionite/cp1) that will eventually adopted to the current project with CP 2, showing how Users, Employees, and Attendance records are related. The relationships shown here will help you understand how data flows through your system and how different components interact.
