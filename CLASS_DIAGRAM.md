@@ -1,6 +1,6 @@
 # cp2a
 
-Homework #2: MotorPH Employee App Implementation
+Homework #1: MotorPH Employee App Implementation
 
 ## Entities
 
