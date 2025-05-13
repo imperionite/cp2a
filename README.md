@@ -39,4 +39,4 @@ Contextual video presentation covering the formation and completion of [cp1](htt
    - Sample manual API call testing and unit tests conducted on Attendance components (entity, service, and controller)
 
 4. [Deductions & Salary (Services and Controllers)](https://drive.google.com/file/d/1sXQIKb8P6Ru19t9mAtocMS4tniD0M0W4/view?usp=sharing):
-   - Sample manual API call testing and unit tests conducted on Deductions and
+   - Sample manual API call testing and unit tests conducted on Deductions and Salary.
