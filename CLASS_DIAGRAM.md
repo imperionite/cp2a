@@ -6,27 +6,14 @@ This backend REST API system is composed of multiple layers of components, class
 
 This architecture ensures clean separation of concerns, maintainable code, and clear responsibility boundaries between components.
 
-
 ## Overview of the Application's Layers:
 
-| Layer | Purpose | Key Components | Responsibilities |
-| --- | --- | --- | --- |
-| Entity Layer | Data Model | User, Employee, Attendance | • Defines data structures
-• Handles JPA annotations
-• Manages relationships
-• Implements validation |
-| Service Layer | Business Logic | UserService, EmployeeService, AttendanceService, SalaryService, DeductionsService | • Implements business rules
-• Handles complex calculations
-• Manages transactions
-• Coordinates between layers |
-| Controller Layer | API Interface | UserController, EmployeeController, AttendanceController, DeductionsController, AuthController | • Handles HTTP requests
-• Manages authentication
-• Processes API responses
-• Routes to appropriate services |
-| Initializer Layer | Data Setup | DataInitializer, AttendanceInitializer | • Loads initial data
-• Sets up admin user
-• Processes CSV files
-• Coordinates initialization order |
+| **Layer**             | **Purpose**       | **Key Components**                                                                                       | **Responsibilities**                                                                                                                                          |
+| --------------------- | ----------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Entity Layer**      | Data Modeling     | `User`, `Employee`, `Attendance`                                                                         | • Defines data structures<br>• Maps entities using JPA annotations<br>• Manages relationships<br>• Applies validation rules                                   |
+| **Service Layer**     | Business Logic    | `UserService`, `EmployeeService`, `AttendanceService`, `SalaryService`, `DeductionsService`              | • Implements core business rules<br>• Performs complex calculations<br>• Manages transactions<br>• Coordinates data flow between layers                       |
+| **Controller Layer**  | API Entry Point   | `UserController`, `EmployeeController`, `AttendanceController`, `DeductionsController`, `AuthController` | • Handles HTTP requests and responses<br>• Manages authentication and session logic<br>• Processes and formats API responses<br>• Delegates tasks to services |
+| **Initializer Layer** | Application Setup | `DataInitializer`, `AttendanceInitializer`                                                               | • Loads initial and sample data<br>• Sets up default admin accounts<br>• Imports data from CSV files<br>• Ensures correct initialization sequence             |
 
 ```mermaid
 flowchart TD
@@ -103,7 +90,6 @@ flowchart TD
     class DataInit,AttInit init
 ```
 
-
 ### Key Elements in Architectural Diagram
 
 ### Color Coding
@@ -124,22 +110,22 @@ The arrows in the diagram represent dependencies and data flow:
 
 ### Key Architectural Features
 
-1. **Layer Separation**  - Each layer has a specific responsibility
-  - Clear boundaries between layers
-  - Single direction of dependencies (top-down)
+1. **Layer Separation** - Each layer has a specific responsibility
 
+- Clear boundaries between layers
+- Single direction of dependencies (top-down)
 
-2. **Component Organization**  - Related components are grouped within layers
-  - Each controller has a corresponding service
-  - Services can depend on multiple entities
-  - Initializers coordinate with services for data setup
+2. **Component Organization** - Related components are grouped within layers
 
+- Each controller has a corresponding service
+- Services can depend on multiple entities
+- Initializers coordinate with services for data setup
 
-3. **Data Flow**  - HTTP requests enter through controllers
-  - Controllers delegate to appropriate services
-  - Services interact with entities for data persistence
-  - Initializers use services to set up initial data
+3. **Data Flow** - HTTP requests enter through controllers
 
+- Controllers delegate to appropriate services
+- Services interact with entities for data persistence
+- Initializers use services to set up initial data
 
 ## Entities
 
@@ -296,21 +282,21 @@ classDiagram
 
 Your services are organized into distinct responsibilities:
 
-1. **User Management**  - UserService handles basic user operations
-  - AuthService manages authentication and security
+1. **User Management** - UserService handles basic user operations
 
+- AuthService manages authentication and security
 
-2. **Employee Management**  - EmployeeService manages employee data and relationships
-  - Depends on both EmployeeRepository and UserRepository
+2. **Employee Management** - EmployeeService manages employee data and relationships
 
+- Depends on both EmployeeRepository and UserRepository
 
-3. **Attendance Tracking**  - AttendanceService handles attendance records
-  - Includes complex calculations for weekly hours
+3. **Attendance Tracking** - AttendanceService handles attendance records
 
+- Includes complex calculations for weekly hours
 
-4. **Payroll Processing**  - SalaryService calculates gross weekly salary
-  - DeductionsService handles all types of deductions (SSS, PhilHealth, Pag-Ibig, Tax)
+4. **Payroll Processing** - SalaryService calculates gross weekly salary
 
+- DeductionsService handles all types of deductions (SSS, PhilHealth, Pag-Ibig, Tax)
 
 ## Controllers
 
@@ -323,7 +309,7 @@ classDiagram
         +getCurrentUser(@AuthenticationPrincipal UserDetails)
         +allUsers(@AuthenticationPrincipal UserDetails)
     }
-    
+
     class EmployeeController {
         -EmployeeService employeeService
         -UserService userService
@@ -333,7 +319,7 @@ classDiagram
         +getBasicInfoByEmployeeNumber(@PathVariable String, @AuthenticationPrincipal UserDetails)
         +getMyDetails(@AuthenticationPrincipal UserDetails)
     }
-    
+
     class AttendanceController {
         -EmployeeService employeeService
         -AttendanceService attendanceService
@@ -342,7 +328,7 @@ classDiagram
         +getAttendanceByEmployeeAndDateRange(@PathVariable String, @RequestParam LocalDate, @RequestParam LocalDate)
         +calculateWeeklyHours(@PathVariable String, @RequestParam LocalDate, @RequestParam LocalDate)
     }
-    
+
     class DeductionsController {
         -DeductionsService deductionsService
         +calculateWeeklySssDeduction(@AuthenticationPrincipal UserDetails, @RequestParam String, @RequestParam LocalDate, @RequestParam LocalDate)
@@ -350,7 +336,7 @@ classDiagram
         +calculateWeeklyPagIbigDeduction(@AuthenticationPrincipal UserDetails, @RequestParam String, @RequestParam LocalDate, @RequestParam LocalDate)
         +calculateWeeklyWithholdingTax(@AuthenticationPrincipal UserDetails, @RequestParam LocalDate, @RequestParam LocalDate, @RequestParam String)
     }
-    
+
     class AuthController {
         -AuthService authService
         -JwtTokenProvider jwtTokenProvider
@@ -358,7 +344,7 @@ classDiagram
         +register(@Valid @RequestBody User, @AuthenticationPrincipal UserDetails)
         +login(@RequestBody User)
     }
-    
+
     UserController --> UserService
     EmployeeController --> EmployeeService
     EmployeeController --> UserService
@@ -381,30 +367,30 @@ classDiagram
 
 Your controllers are organized into distinct responsibilities:
 
-1. **User Management**  - UserController handles user-related operations
-  - Manages user authentication and basic user information
+1. **User Management** - UserController handles user-related operations
 
+- Manages user authentication and basic user information
 
-2. **Employee Management**  - EmployeeController manages employee data and operations
-  - Depends on both EmployeeService and UserService
-  - Handles employee CRUD operations and basic information retrieval
+2. **Employee Management** - EmployeeController manages employee data and operations
 
+- Depends on both EmployeeService and UserService
+- Handles employee CRUD operations and basic information retrieval
 
-3. **Attendance Tracking**  - AttendanceController handles attendance records
-  - Manages attendance creation and retrieval
-  - Calculates weekly hours
-  - Provides weekly cutoff information
+3. **Attendance Tracking** - AttendanceController handles attendance records
 
+- Manages attendance creation and retrieval
+- Calculates weekly hours
+- Provides weekly cutoff information
 
-4. **Deductions Processing**  - DeductionsController handles all types of deductions
-  - Calculates SSS, PhilHealth, Pag-Ibig, and withholding tax
-  - Provides detailed deduction calculations
+4. **Deductions Processing** - DeductionsController handles all types of deductions
 
+- Calculates SSS, PhilHealth, Pag-Ibig, and withholding tax
+- Provides detailed deduction calculations
 
-5. **Authentication**  - AuthController manages user authentication
-  - Handles registration and login operations
-  - Generates JWT tokens for authenticated users
+5. **Authentication** - AuthController manages user authentication
 
+- Handles registration and login operations
+- Generates JWT tokens for authenticated users
 
 ## Repositories
 
@@ -417,14 +403,14 @@ classDiagram
         +Optional~User~ findByUsername(String)
         +boolean existsByUsername(String)
     }
-    
+
     class EmployeeRepository {
         <<Repository>>
         +Optional~Employee~ findByEmployeeNumber(String)
         +Optional~Employee~ findById(Long)
         +Optional~Employee~ findByUser(User)
     }
-    
+
     class AttendanceRepository {
         <<Repository>>
         +List~Attendance~ findByEmployeeNumberAndDateBetween(String, LocalDate, LocalDate)
@@ -435,7 +421,7 @@ classDiagram
         +List~Attendance~ findAttendancesForWeek(String, LocalDate, LocalDate)
         +Optional~Attendance~ findByEmployeeNumberAndDate(String, LocalDate)
     }
-    
+
     UserRepository --> User
     EmployeeRepository --> Employee
     AttendanceRepository --> Attendance
@@ -454,29 +440,27 @@ classDiagram
 
 Your repositories are organized to handle data access for each entity:
 
-1. **UserRepository**  - Handles basic user data access
-  - Provides methods for finding users by username
-  - Includes existence check for usernames
+1. **UserRepository** - Handles basic user data access
 
+- Provides methods for finding users by username
+- Includes existence check for usernames
 
-2. **EmployeeRepository**  - Manages employee data access
-  - Provides methods for finding employees by:
-                    - Employee number
-    - ID
-    - Associated user
+2. **EmployeeRepository** - Manages employee data access
 
+- Provides methods for finding employees by: - Employee number
 
-  - Shows relationship with User entity through `findByUser` method
+  - ID
+  - Associated user
 
+- Shows relationship with User entity through `findByUser` method
 
-3. **AttendanceRepository**  - Handles attendance record management
-  - Provides comprehensive query methods for:
-                    - Date range filtering
-    - Employee-specific attendance
-    - Date boundary queries (min/max dates)
-    - Weekly attendance calculations
-  - Uses JPQL queries for complex operations
+3. **AttendanceRepository** - Handles attendance record management
 
+- Provides comprehensive query methods for: - Date range filtering
+  - Employee-specific attendance
+  - Date boundary queries (min/max dates)
+  - Weekly attendance calculations
+- Uses JPQL queries for complex operations
 
 ## Initializers
 
@@ -495,7 +479,7 @@ classDiagram
         +initializeAttendances()
         +parseBigDecimal(String)
     }
-    
+
     class AttendanceInitializer {
         -AttendanceRepository attendanceRepository
         -EmployeeRepository employeeRepository
@@ -504,20 +488,20 @@ classDiagram
         +processAttendanceRecord(CSVRecord, DateTimeFormatter)
         +parseTime(String)
     }
-    
+
     class EmployeeRepository {
         <<Repository>>
         +Optional~Employee~ findByEmployeeNumber(String)
         +Optional~Employee~ findById(Long)
         +Optional~Employee~ findByUser(User)
     }
-    
+
     class UserRepository {
         <<Repository>>
         +Optional~User~ findByUsername(String)
         +boolean existsByUsername(String)
     }
-    
+
     class Employee {
         -Long id
         -String employeeNumber
@@ -543,7 +527,7 @@ classDiagram
         -LocalDate updatedAt
         -User user
     }
-    
+
     class User {
         -Long id
         -String username
@@ -553,7 +537,7 @@ classDiagram
         -Date createdAt
         -Date updatedAt
     }
-    
+
     class Attendance {
         -Long id
         -String employeeNumber
@@ -563,7 +547,7 @@ classDiagram
         -LocalTime logIn
         -LocalTime logOut
     }
-    
+
     DataInitializer --> UserRepository
     DataInitializer --> EmployeeRepository
     DataInitializer --> AttendanceInitializer
@@ -586,22 +570,18 @@ classDiagram
 
 The diagram shows two main initializer classes:
 
-1. **DataInitializer**  - Primary initializer that runs first (Order = 1)
-  - Depends on both UserRepository and EmployeeRepository
-  - Coordinates the initialization process through three main steps:
-                    - Creates admin user if none exists
-    - Loads employee data from CSV
-    - Initializes attendance data through AttendanceInitializer
+1. **DataInitializer** - Primary initializer that runs first (Order = 1)
 
+- Depends on both UserRepository and EmployeeRepository
+- Coordinates the initialization process through three main steps: - Creates admin user if none exists
+  - Loads employee data from CSV
+  - Initializes attendance data through AttendanceInitializer
 
+2. **AttendanceInitializer** - Secondary initializer that handles attendance data
 
-
-2. **AttendanceInitializer**  - Secondary initializer that handles attendance data
-  - Depends on AttendanceRepository and EmployeeRepository
-  - Processes attendance records from CSV files
-  - Called by DataInitializer after employee data is loaded
-
-
+- Depends on AttendanceRepository and EmployeeRepository
+- Processes attendance records from CSV files
+- Called by DataInitializer after employee data is loaded
 
 ### Key Relationships
 
