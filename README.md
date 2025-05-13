@@ -11,7 +11,7 @@ mvn dependency:purge-local
 mvn clean install
 ```
 
-## Video Demo Presentation Links
+## Video Demo Presentation Links (for cp1)
 
 Contextual video presentation covering the formation and completion of [cp1](https://github.com/imperionite/cp1), the foundational project of this project.
 
