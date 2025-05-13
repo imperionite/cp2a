@@ -6,7 +6,7 @@ This backend REST API system is composed of multiple layers of components, class
 
 This architecture ensures clean separation of concerns, maintainable code, and clear responsibility boundaries between components.
 
-## Overview of the Application's Layers:
+## Overview of the Application Layers:
 
 | **Layer**             | **Purpose**       | **Key Components**                                                                                       | **Responsibilities**                                                                                                                                          |
 | --------------------- | ----------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
