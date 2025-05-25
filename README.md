@@ -2,6 +2,24 @@
 
 An Employee Management System project and extension of the [milestone project from CP 1 course](https://github.com/imperionite/cp1).
 
+**Project Description**
+
+The MotorPH Employee Management System is a basic employee management application for the fictional organization MotorPH, built using Spring Boot, a user-friendly Java framework designed for web applications and RESTful APIs. It utilizes MySQL as its database management system, chosen for its reliability and performance.
+
+This system allows users to log in and perform CRUD (Create, Read, Update, Delete) operations on employee records. Using Spring Boot and a REST API architecture simplifies development and enhances scalability and management of employee data.
+
+**Rationale for Technology Choices**
+
+Spring Boot was chosen for its ease of use and reduced configuration needs, enabling developers to focus on coding. MySQL was selected over CSV files for its robust and scalable data management capabilities. Additionally, a JavaScript frontend framework replaces the original Java Swing, providing a dynamic and responsive user interface across devices.
+
+**Justification for Deviating from the Course Syllabus**
+
+The deviations from the course syllabus are justified for several reasons:
+
+1. **Technological Relevance**: Spring Boot and MySQL reflect current industry practices.
+2. **Enhanced Functionality**: The combination of Spring Boot and a JavaScript frontend offers improved scalability and user experience.
+3. **Improved Learning Outcomes**: Engaging with these technologies equips developers with valuable skills.
+
 ```sh
 # delete maven cache libraries in main repo
 rm -rf ~/.m2/repository

@@ -15,55 +15,82 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity // Enable Spring Security's web security features
+@EnableWebSecurity
 public class WebSecurityConfig {
 
     @Autowired
-    CustomUserDetailsService userDetailsService; // Inject custom user details service
+    CustomUserDetailsService userDetailsService;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(); // Create JWT authentication filter bean
+        return new JwtAuthenticationFilter();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager(); // Create authentication manager bean
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Create password encoder bean (BCrypt)
+        return new BCryptPasswordEncoder();
+    }
+
+    // Define a global CORS configuration source bean
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // Allow only your React frontend origin
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+
+        // Allow HTTP methods your frontend will use
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // Allow headers your frontend will send
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+
+        // Expose Authorization header to frontend (useful for JWT tokens)
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+
+        // Allow credentials (cookies, authorization headers)
+        configuration.setAllowCredentials(true);
+
+        // Cache preflight response for 1 hour
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        // Apply this configuration to all endpoints
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF (Cross-Site Request Forgery) for stateless API
-                .cors(cors -> cors // Enable CORS (Cross-Origin Resource Sharing)
-                        .configurationSource(request -> {
-                            CorsConfiguration configuration = new CorsConfiguration();
-                            configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:3157", "http://yourdomain.com")); // **MODIFY FOR PRODUCTION** - Specify allowed origins
-                            configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Specify allowed HTTP methods
-                            configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept")); // Specify allowed headers
-                            configuration.setExposedHeaders(Arrays.asList("Authorization")); // Specify exposed headers (for JWT)
-                            configuration.setMaxAge(3600L); // Set max age for preflight requests (1 hour)
-                            return configuration;
-                        }))
-                .sessionManagement(sessionManagement -> // Configure session management
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Set session policy to stateless (for JWT)
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests // Authorize HTTP requests
-                        .requestMatchers("/api/auth/register").hasRole("ADMIN") // Restrict /api/auth/register to ADMIN role
-                        .requestMatchers("/api/auth/**").permitAll() // Allow access to other /api/auth endpoints (login, etc.)
-                        .anyRequest().authenticated()); // All other requests require authentication
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless JWT API
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Use the global CORS config
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("/api/auth/register").hasRole("ADMIN")
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .anyRequest().authenticated()
+                );
 
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // Add JWT filter before username/password filter
+        // Add JWT filter before UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        return http.build(); // Build and return the SecurityFilterChain
+        return http.build();
     }
 }
