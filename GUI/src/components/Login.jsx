@@ -44,15 +44,19 @@ const Login = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
 
-      setJwt({ access: data?.access });
+      setJwt({
+        access: data?.access,
+        refresh: data?.refresh,
+        username: data?.username,
+      });
       //const decoded = jwtDecode(data.acess)
-      toast.success(`Welcome`);
+      toast.success(data?.message);
       reset();
       navigate("/employee-management");
     },
     onError: (error) => {
       toast.error(`Login failed: ${error.message}`);
-      navigate("/login");
+      navigate("/");
     },
   });
 
@@ -94,7 +98,7 @@ const Login = () => {
       }}
     >
       <Typography variant="h6" component="h6" gutterBottom>
-        <Link href={"/"} underline="none">
+        <Link href={"/home"} underline="none">
           MotorPH By Imperionite
         </Link>
       </Typography>

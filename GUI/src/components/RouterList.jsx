@@ -8,6 +8,9 @@ import { jwtAtom } from "../services/atoms";
 const Login = lazy(() => import("./Login"));
 const EmployeeManagement = lazy(() => import("./EmployeeManagement"));
 const Home = lazy(() => import("./Home"));
+const About = lazy(() => import("./AboutPage"));
+const Services = lazy(() => import("./Services"));
+const Contact = lazy(() => import("./Contact"));
 const NotFound = lazy(() => import("./404"));
 
 const RouterList = () => {
@@ -15,9 +18,12 @@ const RouterList = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/services" element={<Services />} />
+      <Route path="/contact" element={<Contact />} />
       <Route
-        path="/login"
+        path="/"
         element={
           jwt.access !== "" ? <Navigate to="/employee-management" /> : <Login />
         }
@@ -25,7 +31,7 @@ const RouterList = () => {
       <Route
         path="/employee-management"
         element={
-          jwt.access !== "" ? <EmployeeManagement /> : <Navigate to="/login" />
+          jwt.access !== "" ? <EmployeeManagement /> : <Navigate to="/" />
         }
       />
       <Route path="*" element={<NotFound />} />

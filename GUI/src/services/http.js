@@ -2,7 +2,7 @@ import axios from "axios";
 // import { jwtDecode } from "jwt-decode";
 import qs from "qs";
 
-const baseURL = 'http://localhost:8080';
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const http = axios.create({
   baseURL: baseURL,
@@ -17,11 +17,17 @@ const getAccessToken = () => {
   return token ? token.access : null;
 };
 
+// Function to get refresh token
+const getRefreshToken = () => {
+  const jwtAtom = localStorage.getItem("jwtAtom");
+  let token = jwtAtom ? JSON.parse(jwtAtom) : null;
+  return token ? token.refresh : null;
+};
+
 // Interceptor to add the Authorization header with the access token
 http.interceptors.request.use(
   (config) => {
-    const token = getAccessToken(); // Get the access token from localStorage
-
+    const token = getAccessToken();
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -50,23 +56,43 @@ http.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// API functions
-// const login = async (credentials) => {
-//   const response = await http.post("/api/auth/login", credentials);
-//   console.log(http)
-//   return response.data;
-// };
+// Interceptor to handle 401 errors (no refresh endpoint available)
+http.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-const login = async (credentials) => {
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      // For this setup, can't refresh the access token, so just log out
+      localStorage.removeItem("jwtAtom");
+      localStorage.removeItem("expAtom");
+      // You might also want to redirect to the login page here
+      console.log("Session expired or unauthorized. Please log in again.");
+      // Trigger a logout event or redirect:
+      window.location.href = "/login";
+      return Promise.reject(error);
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+// API functions
+const login = async (data) => {
+  const response = await http.post("/api/auth/login", data);
+  return response.data;
+};
+
+/* const login = async (credentials) => {
   const response = await axios.post(`${baseURL}/api/auth/login`, credentials, {
     withCredentials: true,
-    headers: { 'Content-Type': 'application/json' },
-  })
+    headers: { "Content-Type": "application/json" },
+  });
 
   if (response.status === 200 && response.data) {
-    return response.data
+    return response.data;
   }
-}
+}; */
 
 /* const signup = async (userData) => {
   try {
@@ -83,10 +109,10 @@ const getUserProfile = async () => {
   return response.data;
 };
 
-
 export {
   login,
   // signup,
   getAccessToken,
   getUserProfile,
+  getRefreshToken,
 };

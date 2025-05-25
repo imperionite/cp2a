@@ -5,7 +5,7 @@ import RouterList from "./components/RouterList";
 
 const App = () => {
   const location = useLocation();
-  const excludeHeaderRoutes = ["/login"];
+  const excludeHeaderRoutes = ["/"]; // maybe /signup later
 
   // Check if current path is in excluded routes
   const showHeader = !excludeHeaderRoutes.includes(location.pathname);

@@ -4,13 +4,13 @@ import Container from "@mui/material/Container";
 const Home = () => {
   return (
     <Container maxWidth="xl">
-      <Box sx={{ bgcolor: "#cfe8fc" }}>
+      <Box sx={{ bgcolor: "#cfe8fc", p: 3, mt: 4 }}>
         <header>
-          <h1>Welcome to MotorPH: Employee Management System</h1>
+          <h2>Welcome to MotorPH: Employee Management System</h2>
         </header>
 
         <section>
-          <h2>Introduction</h2>
+          <h3>Home</h3>
           <p>
             This is a proof-of-concept webpage design to augment and test the
             MotorPH backend REST API project for employee management system at{" "}

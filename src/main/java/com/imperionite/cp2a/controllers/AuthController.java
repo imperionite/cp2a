@@ -29,7 +29,8 @@ public class AuthController {
     private UserService userService; // Inject UserService
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody User user, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> register(@Valid @RequestBody User user,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -55,11 +56,18 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> login(@RequestBody User user) {
         return authService.login(user)
                 .map(authenticatedUser -> {
-                    String jwt = jwtTokenProvider.generateToken(authenticatedUser.getUsername());
+                    String username = authenticatedUser.getUsername();
+                    String jwt = jwtTokenProvider.generateToken(username);
+                    String refreshToken = jwtTokenProvider.generateRefreshToken(username);
+
                     Map<String, String> responseBody = new HashMap<>();
                     responseBody.put("access", jwt);
+                    responseBody.put("refresh", refreshToken);
+                    responseBody.put("username", username);
+                    responseBody.put("message", username + " successfully logged in");
                     return ResponseEntity.ok(responseBody);
                 })
                 .orElse(ResponseEntity.status(401).body(Map.of("error", "Invalid credentials!")));
     }
+
 }
