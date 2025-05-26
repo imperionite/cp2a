@@ -27,65 +27,6 @@ All essential background, rationale, and initial API endpoint documentation are 
 
 ---
 
-## Getting Started
-
-### 1. Clone the Project Repository
-
-```bash
-git clone https://github.com/imperionite/cp2a.git
-cd cp2a
-```
-
-### 2. Start the MySQL Database with Docker
-
-Run the following command to start a MySQL 8.0 container for the app database:
-
-```bash
-docker run -d --name mysql -p 4306:3306 \
-  -e MYSQL_ROOT_PASSWORD=password \
-  -e MYSQL_DATABASE=mydb \
-  -e MYSQL_USER=myuser \
-  -e MYSQL_PASSWORD=mypassword \
-  -v mysql-data:/var/lib/mysql \
-  mysql:8.0.40
-```
-
-This will expose MySQL on port 4306 with the specified credentials.
-
-### 3. Run the Spring Boot Backend REST API
-
-From the root of the cloned project (where `pom.xml` is located), run:
-
-```bash
-mvn spring-boot:run
-```
-
-This will start the backend server on port 8080. Ensure you have Maven installed and configured in your environment.
-
-### 4. Run the React Frontend
-
-Navigate to the frontend code directory:
-
-```bash
-cd GUI
-```
-
-Install dependencies (if not already installed):
-
-```bash
-yarn install
-```
-
-Start the frontend development server:
-
-```bash
-yarn dev
-```
-
-The frontend will run on port 5173 and communicate with the backend via REST API calls with CORS enabled.
-
----
-
 ## Initial GUI Screenshots
 
 The GUI or the frontend of this app runs on port `5173` and consuming the REST API backend that runs on port `8080`.
@@ -94,7 +35,7 @@ The GUI or the frontend of this app runs on port `5173` and consuming the REST A
 
 ![Login](https://drive.google.com/uc?id=11DNKKW9q_hB_-f_X4J73cmua9xE_T0Us)
 
-**Note**: Regarding the requirement for [MPHCR04](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867) features related to authentication, my prerequisite project in CP 1 and this current project have user authentication enabled by default, along with a simple implementation of role-based access control that distinguishes between admin users and regular users or employees. To elaborate, although it was not my intention to implement this feature in advance without understanding the requirements of CP 2's project deliverable, I am glad that I made the decision to do so before it was explicitly required.
+**Note**: Regarding the requirement for [MPHCR04](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867) features related to authentication, my prerequisite project in `CP 1` and this current project have `user authentication` enabled by default, along with other features, due to the design and development of the backend API of this app. Additionally, a simple implementation of role-based access control distinguishes between admin users and regular users or employees. To elaborate, although it was not my intention to implement this feature in advance without understanding the requirements of CP 2's project deliverable, I am glad that I made the decision to do so before it was explicitly required.
 
 ---
 

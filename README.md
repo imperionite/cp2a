@@ -118,11 +118,11 @@ $ mvn test -Dtest=com.imperionite.cp2a.controllers.{name_of_the_class}
 
 | Category       | Name/Label             | Link/Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | -------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Unit Tests** | User                   | [Unit tests for User](https://github.com/imperionite/cp1/blob/main/USER_UNIT_TESTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-|                | Employee               | [Unit tests for Employee](https://github.com/imperionite/cp1/blob/main/EMPLOYEE_UNIT_TESTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Unit Tests** | User                   | [Unit tests for User](https://github.com/imperionite/cp1/blob/main/USER_UNIT_TESTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|                | Employee               | [Unit tests for Employee](https://github.com/imperionite/cp1/blob/main/EMPLOYEE_UNIT_TESTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 |                | Attendance             | [Unit test for Attendance](https://github.com/imperionite/cp1/blob/main/ATTENDANCE_UNIT_TESTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 |                | Deductions             | [Unit Test for Deductions](https://github.com/imperionite/cp1/blob/main/DEDUCTIONS_UNIT_TESTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-|                | Salary                 | [Unit tests for Salary](https://github.com/imperionite/cp1/blob/main/SALARY_UNIT_TESTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|                | Salary                 | [Unit tests for Salary](https://github.com/imperionite/cp1/blob/main/SALARY_UNIT_TESTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **Video Demo** | Introduction           | [Introduction Video](https://drive.google.com/file/d/16D1UGsFjzkn4qWhFfcgbQ1BDlcs-8aLl/view?usp=sharing)- Data Seeding- Initial Data Queries- Overview of directories and files for unit tests and manual API test documentation and evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 |                | Users & Employees      | [Users & Employees Video](https://drive.google.com/file/d/1QDkbGKmTv32KfKU3rA0V-MlyhirB49wf/view?usp=share_link)- Sample manual API call testing and unit tests for Users and Employees, covering the components and subcomponents for entities, services, and controllers.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 |                | Rationale & Attendance | [Rationale & Attendance Video](https://drive.google.com/file/d/1V6yHL6fNtRrnQCXOhIPY5Bd_wbTTLv7i/view?usp=sharing)- **Implementation Rationale**: Explanation of development decisions and technologies used- **Nuances**: Insights into specific features and functionalities- **Constraints**: Outlines limitations encountered during development- **Entities**: Describes core entities like User, Employee, and Attendance- **Date and Time Formats**: Specifies date and time formats used- **Weekly Cut-off Dates**: Explains how the system generates weekly cut-off periods- **Calculating Weekly Hours**: Describes the method for calculating work hours with a grace period- **Deductions**: Covers weekly deductions for SSS, PhilHealth, Pag-Ibig, and withholding tax- **Security Module**: Discusses the JWT-based authentication and authorization system- Sample manual API call testing and unit tests conducted on Attendance components (entity, service, and controller) |
@@ -130,6 +130,59 @@ $ mvn test -Dtest=com.imperionite.cp2a.controllers.{name_of_the_class}
 
 ---
 
-## 
+## Getting Started
 
+The frontend will run on port 5173 and communicate with the backend via REST API calls with CORS enabled.
 
+### 1. Clone the Project Repository
+
+```bash
+git clone https://github.com/imperionite/cp2a.git
+cd cp2a
+```
+
+### 2. Start the MySQL Database with Docker
+
+Run the following command to start a MySQL 8.0 container for the app database:
+
+```bash
+docker run -d --name mysql -p 4306:3306 \
+  -e MYSQL_ROOT_PASSWORD=password \
+  -e MYSQL_DATABASE=mydb \
+  -e MYSQL_USER=myuser \
+  -e MYSQL_PASSWORD=mypassword \
+  -v mysql-data:/var/lib/mysql \
+  mysql:8.0.40
+```
+
+This will expose MySQL on port 4306 with the specified credentials.
+
+### 3. Run the Spring Boot Backend REST API
+
+From the root of the cloned project (where `pom.xml` is located), run:
+
+```bash
+mvn spring-boot:run
+```
+
+This will start the backend server on port 8080. Ensure you have Maven installed and configured in your environment.
+
+### 4. Run the React Frontend
+
+Navigate to the frontend code directory:
+
+```bash
+cd GUI
+```
+
+Install dependencies (if not already installed):
+
+```bash
+yarn install
+```
+
+Start the frontend development server:
+
+```bash
+yarn dev
+```
