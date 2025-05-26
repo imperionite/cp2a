@@ -11,3 +11,5 @@ For details, please check the project documentation on the following links:
 - [Project's class diagrams](https://github.com/imperionite/cp2a/blob/main/CLASS_DIAGRAM.md)
 
 - [Homework #3 documentation](https://github.com/imperionite/cp2a/blob/main/Homework%20%233%3A%20GUI%20Practice.md)
+
+- [Milestone 1](https://github.com/imperionite/cp2a/blob/ms1/Milestone1.md)
