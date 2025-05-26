@@ -68,11 +68,10 @@ http.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       // For this setup, can't refresh the access token, so just log out
       localStorage.removeItem("jwtAtom");
-      localStorage.removeItem("expAtom");
       // You might also want to redirect to the login page here
       console.log("Session expired or unauthorized. Please log in again.");
       // Trigger a logout event or redirect:
-      window.location.href = "/login";
+      //window.location.href = "/"; // login route
       return Promise.reject(error);
     }
 

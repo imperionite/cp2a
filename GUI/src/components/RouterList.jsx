@@ -1,10 +1,8 @@
 import React, { lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAtomValue } from "jotai";
-
 import { jwtAtom } from "../services/atoms";
 
-// const Signup = lazy(() => import("./Signup"));
 const Login = lazy(() => import("./Login"));
 const Employees = lazy(() => import("./Employees"));
 const Home = lazy(() => import("./Home"));
@@ -18,22 +16,22 @@ const RouterList = () => {
 
   return (
     <Routes>
-      <Route path="/home" element={<Home />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/services" element={<Services />} />
-      <Route path="/contact" element={<Contact />} />
       <Route
         path="/"
         element={
-          jwt.access !== "" ? <Navigate to="/employees" /> : <Login />
+          jwt.access ? <Navigate to="/employees" replace /> : <Login />
         }
       />
       <Route
         path="/employees"
         element={
-          jwt.access !== "" ? <Employees /> : <Navigate to="/" />
+          jwt.access ? <Employees /> : <Navigate to="/" replace />
         }
       />
+      <Route path="/home" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/services" element={<Services />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

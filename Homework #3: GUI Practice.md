@@ -96,13 +96,19 @@ The GUI or the frontend of this app runs on port `5173` and consuming the REST A
 
 ![Logout](https://drive.google.com/uc?id=16dsLsaNLxeeacInLhsnxsW_svsUm8_ry)
 
-3. **Employees GUI**: Admin User View: This is the view displayed after an admin user is authenticated in the system and redirected to the Employees route. The permission to view this page depends on the logged-in user's is_admin status. Currently, there is only one established admin user in the system with the username admin for simplicity, and their is_admin value is set to true, while the rest are set to false.
+3. **Employees GUI: Admin User View**: This is the view displayed after an admin user is authenticated in the system and redirected to the Employees route. The permission to view this page depends on the logged-in user's is_admin status. Currently, there is only one established admin user in the system with the username admin for simplicity, and their is_admin value is set to true, while the rest are set to false.
 
-![Employee GUI for Admin](https://drive.google.com/uc?id=11GxFORMz4yzbPcCBz7Ff2KMecxyG8zd4)
+![Employee GUI for Admin](https://drive.google.com/uc?id=1ns_gDHPcIsz7Agvh4VrWkQ8RbkxNr787)
 
 4. **Employees GUI: Regular User View**: View after `regular user` authenticated in the system and redirected to `Employees` route.
 
 ![Employee GUI for regular employee](https://drive.google.com/uc?id=1OJ1JUT58MhQLTLe4CIk7Yp-xiMGKoNKz)
+
+5. **Invalid Login**: Incorrect username or password or both.
+
+![Invalid login](https://drive.google.com/uc?id=1JjnYNTru8VAFGfG8bE9XSsbTvLluAXgH)
+
+
 
 
 

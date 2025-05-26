@@ -51,8 +51,8 @@ const Login = () => {
       reset();
       navigate("/employees");
     },
-    onError: (error) => {
-      toast.error(`Login failed: ${error.message}`);
+    onError: () => {
+      toast.error('Invalid login credentials!');
       navigate("/");
     },
   });
@@ -81,7 +81,7 @@ const Login = () => {
   };
 
   if (mutation.isLoading) return <Loader />;
-  if (mutation.isError) return toast.error(mutation.error.message);
+  // if (mutation.isError) toast.error(mutation?.failureReason?.response?.data?.error);
 
   return (
     <Box
