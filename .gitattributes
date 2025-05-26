@@ -3,3 +3,5 @@
 *.java diff=java
 *.js diff=javascript
 
+# *.java linguist-language=java
+# *.js linguist-language=java
