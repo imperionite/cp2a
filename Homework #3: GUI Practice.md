@@ -45,7 +45,7 @@ The GUI or the frontend of this app runs on port `5173` and consuming the REST A
 
 ---
 
-3. **Employees GUI: Admin User View**: This is the view displayed after an admin user is authenticated in the system and redirected to the Employees route. The permission to view this page depends on the logged-in user's is_admin status. Currently, there is only one established admin user in the system with the username admin for simplicity, and their is_admin value is set to true, while the rest are set to false.
+3. **Employees GUI: Admin User View**: This is the view displayed after an admin user is authenticated in the system and redirected to the Employees route. The permission to view this page depends on the logged-in user's is_admin status. Currently, there is only one established admin user in the system with the username admin for simplicity, and their is_admin value is set to true, while the rest are set to false. As prescribed in [MPHCR02](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=1902740868#gid=1902740868) requirement, to display the list of all the employees's employee number, first name, last name, SSS, PhilHealth, TIN and PagIbig numbers but included extra-fields like the user's fields like `username` and `is_admin` attributes as the `Employee` model has a `one-to-one` relationship with `User` model
 
 ![Employee GUI for Admin](https://drive.google.com/uc?id=1ns_gDHPcIsz7Agvh4VrWkQ8RbkxNr787)
 
