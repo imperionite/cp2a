@@ -8,4 +8,4 @@ export const jwtAtom = atomWithStorage("jwtAtom", {
   is_admin: '',
 });
 
-export const employeePartialDetailsAtom = atom([]);
+export const employeesAtom = atom([]);

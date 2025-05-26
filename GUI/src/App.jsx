@@ -15,7 +15,7 @@ const App = () => {
       {showHeader && <Header />}
       <main>
         <div style={{ minHeight: "50px" }}>
-          <Toaster toastOptions={{ duration: 3000 }} />
+          <Toaster toastOptions={{ duration: 10000 }} />
           <RouterList />
         </div>
       </main>
