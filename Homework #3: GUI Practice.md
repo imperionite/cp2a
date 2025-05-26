@@ -19,3 +19,64 @@ All essential background, rationale, and initial API endpoint documentation are 
 - **Frontend Integration:** A new React frontend (in the `GUI` folder) using Vite, running independently and communicating with the backend via REST API and CORS.
 - **Improved Modularity:** Backend and frontend are decoupled for easier deployment and scalability.
 - **Updated Documentation:** Enhanced and updated documentation, with references to class diagrams ([see here](https://github.com/imperionite/cp2a/blob/main/CLASS_DIAGRAM.md)) and new features added in this phase.
+
+---
+
+## ** Java Backend REST API Endpoints & Manual API Tests**
+
+![net salary](https://drive.google.com/uc?id=1-VVMFf-vSvLB6rsmA1c9nQE8N22QItai)
+
+Refer to the following list of links to get an idea what are the REST API endpoints that are developed in the project using Spring Boot and how HTTP requests are executed in [REST Client extension for Visual Studio Code (VS Code)](https://marketplace.visualstudio.com/items?itemName=humao.rest-client).
+
+| **Module**     | **Description**                                                                                                       | **API Documentation**                                                             | **Sample API Calls**                                                            |
+| -------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **User**       | User registration, authentication, and fetching users                                                                 | [User API](https://github.com/imperionite/cp1/blob/main/USER_HTTP.md)             | [Users HTTP](https://github.com/imperionite/cp1/blob/main/users.http)           |
+| **Employee**   | Retrieving employee information, creating new employees, etc.                                                         | [Employee API](https://github.com/imperionite/cp1/blob/main/EMPLOYEE_HTTP.md)     | [Employees HTTP](https://github.com/imperionite/cp1/blob/main/employees.http)   |
+| **Attendance** | Calculating employee's work hours, retrieving weekly cut-offs, displaying attendance records, creating new attendance | [Attendance API](https://github.com/imperionite/cp1/blob/main/ATTENDANCE_HTTP.md) | [Attendance HTTP](https://github.com/imperionite/cp1/blob/main/attendance.http) |
+| **Deductions** | Fetching generic deductions calculated weekly for the logged-in employee/user                                         | [Deductions API](https://github.com/imperionite/cp1/blob/main/DEDUCTIONS_HTTP.md) | [Deductions HTTP](https://github.com/imperionite/cp1/blob/main/deductions.http) |
+| **Salary**     | Fetching logged-in employee/user weekly salary info (gross/net)                                                       | [Salary API](https://github.com/imperionite/cp1/blob/main/SALARY_HTTP.md)         | [Salary HTTP](https://github.com/imperionite/cp1/blob/main/salary.http)         |
+
+---
+
+## Initial Data Source and Application Setup
+
+The initial data utilized by this application is sourced from the Google Sheets provided in the Phase 1 requirements instruction, accessible via this [link](https://sites.google.com/mmdc.mcl.edu.ph/motorph/home). Specifically, the [Employee](https://docs.google.com/spreadsheets/d/1168Un_0b5CPDwDSOH4CWI1m8_-2LpLadX3wAdUNNFOo/edit?usp=sharing) database serves as the foundational dataset. The process of seeding data is accomplished through the use of the `ApplicationRunner`.
+
+### Data Seeding and Initial Setup
+
+The application uses an `ApplicationRunner` to seed the database with initial data. This ensures that the application has a basic set of employees and users to start with. The data is prepared in a multi-step process:
+
+1.  **Google Sheets:** Employee and user data is initially sourced in Google Sheets for ease of collaboration and management.
+2.  **CSV Export:** This data is then exported from Google Sheets in CSV (Comma Separated Value) format.
+3.  **MySQL Import:** The CSV files are then used to populate the MySQL database during application startup using the `ApplicationRunner`. This automated process ensures that the database is consistently populated with the necessary data.
+
+**Rationale:** This approach allows for a flexible and manageable way to maintain and update the initial data. Google Sheets provides a user-friendly interface for data entry and collaboration, while the CSV format serves as a reliable intermediate format for importing into the database. The `ApplicationRunner` automates the import process, ensuring data consistency and reducing manual effort.
+
+### Initial Tables and Data Overview
+
+During the initial execution of the application, several tables and corresponding datasets are established. These tables form the core structure upon which further functionalities will be built.
+
+[![DB Table](https://drive.google.com/uc?export=view&id=1_e_WfiN6aNj7y7HEjZMCa116wgHid9CV)](https://drive.google.com/file/d/1_e_WfiN6aNj7y7HEjZMCa116wgHid9CV/view?usp=sharing)
+
+---
+
+#### Users Table
+
+[![Users Table](https://drive.google.com/uc?export=view&id=1eWGZmh_5VubQ87pKTJM5d66fBTGCnxR3)](https://drive.google.com/file/d/1eWGZmh_5VubQ87pKTJM5d66fBTGCnxR3/view?usp=sharing)
+
+---
+
+#### Employees Table
+
+[![Employees Table](https://drive.google.com/uc?export=view&id=1DXsEzSAfoVljpL56ltlXn_PR0IdVsWi8)](https://drive.google.com/file/d/1DXsEzSAfoVljpL56ltlXn_PR0IdVsWi8/view?usp=sharing)
+
+**prescribed**
+
+[![Employees Table - prescribed](https://drive.google.com/uc?export=view&id=10MqVlvdk2bpgXQQ98vKMz82c36bMePEV)](https://drive.google.com/file/d/10MqVlvdk2bpgXQQ98vKMz82c36bMePEV/view?usp=sharing)
+
+---
+
+#### Attendance Table
+
+[![Attendance Table](https://drive.google.com/uc?export=view&id=1au5gUECk_yItZT8FVTSU1sj972DgbkB4)](https://drive.google.com/file/d/10MqVlvdk2bpgXQQ98vKMz82c36bMePEV/view?usp=sharing)
+
