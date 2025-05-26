@@ -51,7 +51,7 @@ The GUI or the frontend of this app runs on port `5173` and consuming the REST A
 
 ---
 
-4. **Employees GUI: Regular User View**: View after `regular user` authenticated in the system and redirected to `Employees` route.
+4. **Employees GUI: Regular User View**: View after `regular user` authenticated in the system and redirected to `Employees` route. Regular user or employee has an employee list view also but only selected fields like employee number, first name, last name and birthday fields are included.
 
 ![Employee GUI for regular employee](https://drive.google.com/uc?id=1OJ1JUT58MhQLTLe4CIk7Yp-xiMGKoNKz)
 
