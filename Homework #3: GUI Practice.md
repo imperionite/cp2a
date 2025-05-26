@@ -35,7 +35,7 @@ The GUI or the frontend of this app runs on port `5173` and consuming the REST A
 
 ![Login](https://drive.google.com/uc?id=11DNKKW9q_hB_-f_X4J73cmua9xE_T0Us)
 
-**Note**: Regarding the requirement for [MPHCR04](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867) features related to authentication, my prerequisite project in `CP 1` and this current project have `user authentication` enabled by default, along with other features, due to the design and development of the backend API of this app. Additionally, a simple implementation of role-based access control distinguishes between admin users and regular users or employees. To elaborate, although it was not my intention to implement this feature in advance without understanding the requirements of CP 2's project deliverable, I am glad that I made the decision to do so before it was explicitly required.
+**Note**: Regarding the requirement for [MPHCR04](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867) features related to authentication, my prerequisite project in `CP 1` and this current project have `user authentication` enabled by default, along with other features, due to the design and development of the backend API of this app. Additionally, a simple implementation of role-based access control distinguishes between admin users and regular users or employees. To elaborate, although it was not my intention to implement this feature in advance without understanding the requirements of CP 2's project deliverable, but I am glad that I made the decision to do so before it was explicitly required.
 
 ---
 
