@@ -20,15 +20,6 @@ The deviations from the course syllabus are justified for several reasons:
 2. **Enhanced Functionality**: The combination of Spring Boot and a JavaScript frontend offers improved scalability and user experience.
 3. **Improved Learning Outcomes**: Engaging with these technologies equips developers with valuable skills.
 
-```sh
-# delete maven cache libraries in main repo
-rm -rf ~/.m2/repository
-# clean the local repository
-mvn dependency:purge-local
-# Force clean and rebuild
-mvn clean install
-```
-
 ## Video Demo Presentation Links (for cp1)
 
 Contextual video presentation covering the formation and completion of [cp1](https://github.com/imperionite/cp1), the foundational project of this project.
