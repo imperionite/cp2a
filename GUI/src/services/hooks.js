@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { userKeys } from "./queryKeyFactory";
-import { getUserProfile } from "./http";
+import { userKeys, employeeKeys } from "./queryKeyFactory";
+import { getUserProfile, getEmployeePartialDetails } from "./http";
 
 export const useUserProfile = (accessToken) => {
   return useQuery({
@@ -10,5 +10,15 @@ export const useUserProfile = (accessToken) => {
     staleTime: 5 * 60 * 1000, // optional: cache data for 5 minutes
     retry: 1, // optional: retry once on failure
     enabled: !!accessToken, // enable only if auth accessToken is truthy
+  });
+};
+
+export const useEmployeePartialDetails = (is_admin) => {
+  return useQuery({
+    queryKey: employeeKeys.detail("partialDetails"),
+    queryFn: getEmployeePartialDetails,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+    enabled: !!is_admin
   });
 };

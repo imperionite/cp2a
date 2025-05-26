@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import lombok.*; // Lombok for cleaner code
+import lombok.*;
 
 // EmployeeFullDetails DTO (For Admin and Own Details)
 @Getter

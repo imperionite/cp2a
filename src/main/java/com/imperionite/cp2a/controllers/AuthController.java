@@ -57,6 +57,7 @@ public class AuthController {
         return authService.login(user)
                 .map(authenticatedUser -> {
                     String username = authenticatedUser.getUsername();
+                    Boolean is_admin = authenticatedUser.getIsAdmin();
                     String jwt = jwtTokenProvider.generateToken(username);
                     String refreshToken = jwtTokenProvider.generateRefreshToken(username);
 
@@ -64,6 +65,7 @@ public class AuthController {
                     responseBody.put("access", jwt);
                     responseBody.put("refresh", refreshToken);
                     responseBody.put("username", username);
+                    responseBody.put("is_admin", is_admin.toString());
                     responseBody.put("message", username + " successfully logged in");
                     return ResponseEntity.ok(responseBody);
                 })

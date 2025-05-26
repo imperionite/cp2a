@@ -1,9 +1,12 @@
 import axios from "axios";
-// import { jwtDecode } from "jwt-decode";
 import qs from "qs";
 
-const baseURL = import.meta.env.VITE_BASE_URL;
+/***
+ * Important: create a .env file at the root of this sub-project (GUI folder) and place:
+ * VITE_BASE_URL=http://localhost:8080 or the port of the Spring Boot app
+ ***/
 
+const baseURL = import.meta.env.VITE_BASE_URL;
 const http = axios.create({
   baseURL: baseURL,
   withCredentials: true,
@@ -109,10 +112,22 @@ const getUserProfile = async () => {
   return response.data;
 };
 
+const getEmployeePartialDetails = async () => {
+  const response = await http.get("/api/employees/partial/details");
+  return response.data;
+};
+
+const getEmployeeBasicInfo = async () => {
+  const response = await http.get("/api/employees/basic-info");
+  return response.data;
+};
+
 export {
   login,
   // signup,
   getAccessToken,
   getUserProfile,
   getRefreshToken,
+  getEmployeePartialDetails,
+  getEmployeeBasicInfo,
 };

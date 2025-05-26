@@ -14,18 +14,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { sanitize } from "isomorphic-dompurify";
-//import { jwtDecode } from "jwt-decode";
 import * as yup from "yup";
 
 import { login } from "../services/http";
 import { userKeys } from "../services/queryKeyFactory";
 import { jwtAtom } from "../services/atoms";
-// import { useUserProfile } from "../services/hooks";
 const Loader = lazy(() => import("./Loader"));
 
 const Login = () => {
-  // const jwt = useAtomValue(jwtAtom);
-  // const { data: profileData } = useUserProfile(jwt?.access);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const setJwt = useSetAtom(jwtAtom);
@@ -48,11 +44,12 @@ const Login = () => {
         access: data?.access,
         refresh: data?.refresh,
         username: data?.username,
+        is_admin: data?.is_admin,
       });
       //const decoded = jwtDecode(data.acess)
       toast.success(data?.message);
       reset();
-      navigate("/employee-management");
+      navigate("/employees");
     },
     onError: (error) => {
       toast.error(`Login failed: ${error.message}`);
@@ -84,6 +81,7 @@ const Login = () => {
   };
 
   if (mutation.isLoading) return <Loader />;
+  if (mutation.isError) return toast.error(mutation.error.message);
 
   return (
     <Box

@@ -7,6 +7,7 @@ import com.imperionite.cp2a.services.UserService;
 
 import com.imperionite.cp2a.dtos.AdminEmployeeDTO;
 import com.imperionite.cp2a.dtos.EmployeeBasicInfoDTO;
+import com.imperionite.cp2a.dtos.EmployeePartialDetailsDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -217,6 +218,30 @@ public class EmployeeController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 Unauthorized - User not found
+        }
+    }
+
+    @GetMapping("/partial/details")
+    public ResponseEntity<List<EmployeePartialDetailsDTO>> getAllEmployeePartialDetails(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Optional<User> optionalUser = userService.findByUsername(userDetails.getUsername());
+
+        if (optionalUser.isPresent()) {
+            User currentUser = optionalUser.get();
+
+            if (currentUser.getIsAdmin()) {
+                List<EmployeePartialDetailsDTO> details = employeeService.getAllEmployeePartialDetails();
+                return ResponseEntity.ok(details);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 

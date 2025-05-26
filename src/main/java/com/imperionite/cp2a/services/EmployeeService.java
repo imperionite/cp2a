@@ -1,6 +1,7 @@
 package com.imperionite.cp2a.services;
 
 import com.imperionite.cp2a.entities.Employee;
+import com.imperionite.cp2a.dtos.EmployeePartialDetailsDTO;
 import com.imperionite.cp2a.entities.User;
 import com.imperionite.cp2a.repositories.EmployeeRepository;
 import com.imperionite.cp2a.repositories.UserRepository;
@@ -30,7 +31,7 @@ public class EmployeeService {
             employee.setUser(userOpt.get());
             return employeeRepository.save(employee);
         } else {
-            throw new EntityNotFoundException("User not found for ID: " + employee.getUser().getId()); 
+            throw new EntityNotFoundException("User not found for ID: " + employee.getUser().getId());
         }
     }
 
@@ -49,4 +50,22 @@ public class EmployeeService {
     public Optional<Employee> getEmployeeByEmployeeNumber(String employeeNumber) {
         return employeeRepository.findByEmployeeNumber(employeeNumber);
     }
+
+    public List<EmployeePartialDetailsDTO> getAllEmployeePartialDetails() {
+        List<Employee> employees = employeeRepository.findAll();
+        return employees.stream()
+                .map(emp -> new EmployeePartialDetailsDTO(
+                        emp.getId(), 
+                        emp.getEmployeeNumber(),
+                        emp.getLastName(),
+                        emp.getFirstName(),
+                        emp.getSss(),
+                        emp.getPhilhealth(),
+                        emp.getTin(),
+                        emp.getPagibig(),
+                        emp.getUser()
+                ))
+                .toList();
+    }
+
 }

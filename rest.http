@@ -1,7 +1,9 @@
-### Variables
-@access=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMDAwMSIsImlhdCI6MTc0MjQ4MTM2NCwiZXhwIjoxNzQyNDkyMTY0fQ.GY2IrP4Qj2bH4yyZcaRoYhZXPnT0RKRMt3aIh2FbCBw_CouiIK7a-EfjRiu03IE3H-1T9s_jNfo-AEoBwpS8lQ
+### Variables ###
+@access=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0ODI0NTA4OCwiZXhwIjoxNzQ4MjQ4Njg4fQ.b-5snkfLZhEq87ifPDcYdEfdrUBh5NA6iEG667uvBQi5TZ-wd4cOyH34EleLjoljGKMiWT72xPSgo2IG86gJSg
 @adminAccess=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0MjQ4MTM5OSwiZXhwIjoxNzQyNDkyMTk5fQ.fgmYjGaGy3TsmnfFlsjsUQJot865RG-Dt8QW-5mE3nhm_W1Q5qLTPtS_BFXRKj4Ot_4K-wC6tBw77ULG4sb13Q
 #####################################################################################################################
+
+### USER ###
 
 ### login (public & all users)
 POST http://localhost:8080/api/auth/login HTTP/1.1
@@ -20,3 +22,19 @@ Content-Type: application/json
     "username": "admin",
     "password": "adminPassword"
 }
+
+### EMPLOYEE ###
+
+
+### Fetch all employees info - Admin only
+GET http://localhost:8080/api/employees HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{access}}
+
+### Fetch partial employees info - Admin only
+GET http://localhost:8080/api/employees/partial/details HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{access}}
+
+
+

@@ -9,6 +9,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import App from "./App.jsx";
 import theme from "./theme";
 
+import './index.css'
+
 const queryClient = new QueryClient();
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

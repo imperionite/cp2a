@@ -57,7 +57,7 @@ function Header() {
     Services: "/services",
     Contact: "/contact",
     Login: "/",
-    Employees: '/employee-management'
+    Employees: '/employees'
     // Account: "/account",
   };
 
