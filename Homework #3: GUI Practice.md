@@ -35,6 +35,7 @@ All essential background, rationale, and initial API endpoint documentation are 
 git clone https://github.com/imperionite/cp2a.git
 cd cp2a
 ```
+
 ### 2. Start the MySQL Database with Docker
 
 Run the following command to start a MySQL 8.0 container for the app database:
@@ -83,6 +84,8 @@ yarn dev
 
 The frontend will run on port 5173 and communicate with the backend via REST API calls with CORS enabled.
 
+---
+
 ## Initial GUI Screenshots
 
 The GUI or the frontend of this app runs on port `5173` and consuming the REST API backend that runs on port `8080`.
@@ -91,28 +94,28 @@ The GUI or the frontend of this app runs on port `5173` and consuming the REST A
 
 ![Login](https://drive.google.com/uc?id=11DNKKW9q_hB_-f_X4J73cmua9xE_T0Us)
 
+**Note**: Regarding the requirement for [MPHCR04](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867) features related to authentication, my prerequisite project in CP 1 and this current project have user authentication enabled by default, along with a simple implementation of role-based access control that distinguishes between admin users and regular users or employees. To elaborate, although it was not my intention to implement this feature in advance without understanding the requirements of CP 2's project deliverable, I am glad that I made the decision to do so before it was explicitly required.
+
+---
 
 2. **Logout**: User can logout from the app by clicking the Logout top header menu.
 
 ![Logout](https://drive.google.com/uc?id=16dsLsaNLxeeacInLhsnxsW_svsUm8_ry)
 
+---
+
 3. **Employees GUI: Admin User View**: This is the view displayed after an admin user is authenticated in the system and redirected to the Employees route. The permission to view this page depends on the logged-in user's is_admin status. Currently, there is only one established admin user in the system with the username admin for simplicity, and their is_admin value is set to true, while the rest are set to false.
 
 ![Employee GUI for Admin](https://drive.google.com/uc?id=1ns_gDHPcIsz7Agvh4VrWkQ8RbkxNr787)
+
+---
 
 4. **Employees GUI: Regular User View**: View after `regular user` authenticated in the system and redirected to `Employees` route.
 
 ![Employee GUI for regular employee](https://drive.google.com/uc?id=1OJ1JUT58MhQLTLe4CIk7Yp-xiMGKoNKz)
 
+---
+
 5. **Invalid Login**: Incorrect username or password or both.
 
 ![Invalid login](https://drive.google.com/uc?id=1JjnYNTru8VAFGfG8bE9XSsbTvLluAXgH)
-
-
-
-
-
-
-
-
-
