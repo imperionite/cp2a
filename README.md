@@ -4,6 +4,13 @@ The MotorPH Employee Management System is a basic employee management applicatio
 
 This system allows users to log in and perform CRUD (Create, Read, Update, Delete) operations on employee records. Using Spring Boot and a REST API architecture simplifies development and enhances scalability and management of employee data.
 
+The projects aims to satisfy the requirements stated in the [MotorPH's Change Requests Form](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?usp=sharing):
+
+- [MPHCR01-Feature 1](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=475634283#gid=475634283)
+- [MPHCR02-Feature 2](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=1902740868#gid=1902740868)
+- [MPHCR03-Feature 3](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=28244578#gid=28244578)
+- [MPHCR04-Feature 4](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867)
+
 **Rationale for Technology Choices**
 
 Spring Boot was chosen for its ease of use and reduced configuration needs, enabling developers to focus on coding. MySQL was selected over CSV files for its robust and scalable data management capabilities. Additionally, a JavaScript frontend framework replaces the original Java Swing, providing a dynamic and responsive user interface across devices.
