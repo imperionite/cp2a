@@ -8,19 +8,28 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Button,
 } from "@mui/material";
 import { toast } from "react-hot-toast";
 import { employeesAtom } from "../services/atoms";
-import { useEmployeeBasicInfo, useEmployeePartialDetails } from "../services/hooks";
+import {
+  useEmployeeBasicInfo,
+  useEmployeePartialDetails,
+} from "../services/hooks";
 import { jwtAtom } from "../services/atoms";
+import { useNavigate } from "react-router-dom";
+
 const Loader = lazy(() => import("./Loader"));
 
 const EmployeesTable = ({ isAdmin }) => {
   const [employees, setEmployees] = useAtom(employeesAtom);
   const jwt = useAtomValue(jwtAtom);
+  const navigate = useNavigate();
 
   // Choose the right data fetcher based on isAdmin
-  const useFetchData = isAdmin ? useEmployeePartialDetails : useEmployeeBasicInfo;
+  const useFetchData = isAdmin
+    ? useEmployeePartialDetails
+    : useEmployeeBasicInfo;
   const {
     data: employeeData,
     isLoading,
@@ -50,46 +59,58 @@ const EmployeesTable = ({ isAdmin }) => {
         "Username",
         "Admin",
       ]
-    : [
-        "Employee Number",
-        "First Name",
-        "Last Name",
-        "Birthday",
-      ];
+    : ["Employee Number", "First Name", "Last Name", "Birthday"];
 
   return (
-    <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 600 }}>
-      <Table stickyHeader aria-label="employee details table">
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <TableCell key={column}>{column}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {employees.map((emp) => (
-            <TableRow key={emp.id}>
-              <TableCell>{emp.employeeNumber}</TableCell>
-              <TableCell>{emp.firstName}</TableCell>
-              <TableCell>{emp.lastName}</TableCell>
-              {isAdmin ? (
-                <>
-                  <TableCell>{emp.sss}</TableCell>
-                  <TableCell>{emp.philhealth}</TableCell>
-                  <TableCell>{emp.tin}</TableCell>
-                  <TableCell>{emp.pagibig}</TableCell>
-                  <TableCell>{emp.user?.username}</TableCell>
-                  <TableCell>{emp.user?.isAdmin ? "Yes" : "No"}</TableCell>
-                </>
-              ) : (
-                <TableCell>{emp.birthday}</TableCell>
-              )}
+    <>
+      <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 600 }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell key={column}>{column}</TableCell>
+              ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {employees.map((emp) => (
+              <TableRow key={emp.id}>
+                <TableCell>
+                  {isAdmin ? (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(`/employees/${emp.employeeNumber}`);
+                      }}
+                    >
+                      {emp.employeeNumber}
+                    </Button>
+                  ) : (
+                    emp.employeeNumber
+                  )}
+                </TableCell>
+                <TableCell>{emp.firstName}</TableCell>
+                <TableCell>{emp.lastName}</TableCell>
+                {isAdmin ? (
+                  <>
+                    <TableCell>{emp.sss}</TableCell>
+                    <TableCell>{emp.philhealth}</TableCell>
+                    <TableCell>{emp.tin}</TableCell>
+                    <TableCell>{emp.pagibig}</TableCell>
+                    <TableCell>{emp.user?.username}</TableCell>
+                    <TableCell>{emp.user?.isAdmin ? "Yes" : "No"}</TableCell>
+                  </>
+                ) : (
+                  <TableCell>{emp.birthday}</TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 

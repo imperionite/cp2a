@@ -9,6 +9,7 @@ const Home = lazy(() => import("./Home"));
 const About = lazy(() => import("./AboutPage"));
 const Services = lazy(() => import("./Services"));
 const Contact = lazy(() => import("./Contact"));
+const EmployeeDetailsPage = lazy(() => import("./EmployeeDetailsPage"));
 const NotFound = lazy(() => import("./404"));
 
 const RouterList = () => {
@@ -18,14 +19,16 @@ const RouterList = () => {
     <Routes>
       <Route
         path="/"
-        element={
-          jwt.access ? <Navigate to="/employees" replace /> : <Login />
-        }
+        element={jwt.access ? <Navigate to="/employees" replace /> : <Login />}
       />
       <Route
         path="/employees"
+        element={jwt.access ? <Employees /> : <Navigate to="/" replace />}
+      />
+      <Route
+        path="/employees/:employeeNumber"
         element={
-          jwt.access ? <Employees /> : <Navigate to="/" replace />
+          jwt.access ? <EmployeeDetailsPage /> : <Navigate to="/" replace />
         }
       />
       <Route path="/home" element={<Home />} />

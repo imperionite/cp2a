@@ -27,7 +27,7 @@ All essential background, rationale, and initial API endpoint documentation are 
 
 ---
 
-## Initial GUI Screenshots
+## Sample GUI Screenshots for MS 1 Submission
 
 The GUI or the frontend of this app runs on port `5173` and consuming the REST API backend that runs on port `8080`.
 
@@ -45,18 +45,26 @@ The GUI or the frontend of this app runs on port `5173` and consuming the REST A
 
 ---
 
-3. **Employees GUI: Admin User View**: This is the view displayed after an admin user is authenticated in the system and redirected to the Employees route. The permission to view this page depends on the logged-in user's is_admin status. Currently, there is only one established admin user in the system with the username admin for simplicity, and their is_admin value is set to true, while the rest are set to false. As prescribed in [MPHCR02](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=1902740868#gid=1902740868) requirement, to display the list of all the employees's employee number, first name, last name, SSS, PhilHealth, TIN and PagIbig numbers but included extra-fields like the user's fields like `username` and `is_admin` attributes as the `Employee` model has a `one-to-one` relationship with `User` model
+3. **Employees GUI: Admin User View**: This is the view displayed after an admin user is authenticated in the system and redirected to the Employees route. The permission to view this page depends on the logged-in user's is_admin status. Currently, there is only one established admin user in the system with the username admin for simplicity, and their is_admin value is set to true, while the rest are set to false. As prescribed in [MPHCR02](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=1902740868#gid=1902740868) requirement, to display the list of all the employees's employee number, first name, last name, SSS, PhilHealth, TIN and PagIbig numbers but included extra-fields like the user's fields like `username` and `is_admin` attributes as the `Employee` model has a `one-to-one` relationship with `User` model.
 
-![Employee GUI for Admin](https://drive.google.com/uc?id=1ns_gDHPcIsz7Agvh4VrWkQ8RbkxNr787)
+The button links provided for employee number column are clickable and will be redirected to a frame that display the full employment details of employee.
+
+![Employee GUI for Admin](https://drive.google.com/uc?id=1v5wGq-J7MpczME5IivilYvxtdN9Xsp0l)
 
 ---
 
-4. **Employees GUI: Regular User View**: View after `regular user` authenticated in the system and redirected to `Employees` route. Regular user or employee has an employee list view also but only selected fields like employee number, first name, last name and birthday fields are included.
+4. **Employee GUI: Admin User View**: Rendered the complete employment employee details of certain employee.
+
+![Employe GUI for Admin](https://drive.google.com/uc?id=1oS4GTcasfN9Yeb5beIk-pik17xb925pK)
+
+---
+
+5. **Employees GUI: Regular User View**: View after `regular user` authenticated in the system and redirected to `Employees` route. Regular user or employee has an employee list view also but only selected fields like employee number, first name, last name and birthday fields are included.
 
 ![Employee GUI for regular employee](https://drive.google.com/uc?id=1OJ1JUT58MhQLTLe4CIk7Yp-xiMGKoNKz)
 
 ---
 
-5. **Invalid Login**: Incorrect username or password or both.
+6. **Invalid Login**: Incorrect username or password or both.
 
 ![Invalid login](https://drive.google.com/uc?id=1JjnYNTru8VAFGfG8bE9XSsbTvLluAXgH)

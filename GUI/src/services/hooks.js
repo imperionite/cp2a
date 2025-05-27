@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { userKeys, employeeKeys } from "./queryKeyFactory";
-import { getUserProfile, getEmployeePartialDetails, getEmployeeBasicInfo } from "./http";
+import {
+  getUserProfile,
+  getEmployeePartialDetails,
+  getEmployeeBasicInfo,
+  getEmployeeByEmployeeNumber,
+} from "./http";
 
 export const useUserProfile = (accessToken) => {
   return useQuery({
@@ -19,7 +24,7 @@ export const useEmployeePartialDetails = (is_admin) => {
     queryFn: getEmployeePartialDetails,
     staleTime: 5 * 60 * 1000,
     retry: 1,
-    enabled: !!is_admin
+    enabled: !!is_admin,
   });
 };
 
@@ -29,6 +34,16 @@ export const useEmployeeBasicInfo = (accessToken) => {
     queryFn: getEmployeeBasicInfo,
     staleTime: 5 * 60 * 1000,
     retry: 1,
-    enabled: !!accessToken
+    enabled: !!accessToken,
+  });
+};
+
+export const useFetchByEmployeeNumber = (accessToken, employeeNumber) => {
+  return useQuery({
+    queryKey: ["fetchByEmployeeNum", employeeNumber],
+    queryFn: () => getEmployeeByEmployeeNumber(employeeNumber),
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+    enabled: !!accessToken && !!employeeNumber,
   });
 };

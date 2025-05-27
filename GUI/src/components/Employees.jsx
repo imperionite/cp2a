@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import { jwtAtom } from "../services/atoms";
 import EmployeesTable from "./EmployeesTable";
 
@@ -10,7 +10,10 @@ const Employees = () => {
     <Container>
       <Box sx={{ bgcolor: "#cfe8fc", p: 2, mt: 2 }}>
         <header>
-          <h2>Employees List</h2>
+          <Typography variant="h5">Employees List</Typography>
+          <Typography variant="body1" color="success">
+            Authenticated User: {jwt?.username}
+          </Typography>
         </header>
         <section>
           <EmployeesTable isAdmin={jwt?.is_admin === "true"} />

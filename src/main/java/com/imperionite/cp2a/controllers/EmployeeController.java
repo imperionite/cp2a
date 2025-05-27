@@ -159,6 +159,7 @@ public class EmployeeController {
         List<Employee> employees = employeeService.getAllEmployees(); // Get all employees
         List<EmployeeBasicInfoDTO> employeeDTOs = employees.stream()
                 .map(employee -> new EmployeeBasicInfoDTO( // Map to the DTO
+                        employee.getId(),
                         employee.getEmployeeNumber(),
                         employee.getFirstName(),
                         employee.getLastName(),
@@ -182,6 +183,7 @@ public class EmployeeController {
             Optional<Employee> employee = employeeService.getEmployeeByEmployeeNumber(employeeNumber);
             if (employee.isPresent()) {
                 EmployeeBasicInfoDTO dto = new EmployeeBasicInfoDTO(
+                        employee.get().getId(),
                         employee.get().getEmployeeNumber(),
                         employee.get().getFirstName(),
                         employee.get().getLastName(),

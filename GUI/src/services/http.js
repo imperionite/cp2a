@@ -81,8 +81,13 @@ http.interceptors.response.use(
 
 // API functions
 const login = async (data) => {
-  const response = await http.post("/api/auth/login", data);
-  return response.data;
+  try {
+    const response = await http.post("/api/auth/login", data);
+    return response.data;
+  } catch (error) {
+    console.error("Login error", error);
+    throw new Error("Failed to login!");
+  }
 };
 
 /* const login = async (credentials) => {
@@ -112,13 +117,35 @@ const getUserProfile = async () => {
 };
 
 const getEmployeePartialDetails = async () => {
-  const response = await http.get("/api/employees/partial/details");
-  return response.data;
+  try {
+    const response = await http.get("/api/employees/partial/details");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching employee:", error);
+    throw new Error("Failed to fetch employees list!");
+  }
 };
 
 const getEmployeeBasicInfo = async () => {
-  const response = await http.get("/api/employees/basic-info");
-  return response.data;
+  try {
+    const response = await http.get("/api/employees/basic-info");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching employee:", error);
+    throw new Error("Failed to fetch employee asic information!");
+  }
+};
+
+const getEmployeeByEmployeeNumber = async (employeeNumber) => {
+  try {
+    const response = await http.get(
+      `/api/employees/employeeNumber/${employeeNumber}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching employee:", error);
+    throw new Error("Failed to fetch employee data");
+  }
 };
 
 export {
@@ -129,4 +156,5 @@ export {
   getRefreshToken,
   getEmployeePartialDetails,
   getEmployeeBasicInfo,
+  getEmployeeByEmployeeNumber,
 };

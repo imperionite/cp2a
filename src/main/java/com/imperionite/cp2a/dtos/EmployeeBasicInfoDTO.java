@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeBasicInfoDTO {
+    private Long id;
     private String employeeNumber;
     private String lastName;
     private String firstName;

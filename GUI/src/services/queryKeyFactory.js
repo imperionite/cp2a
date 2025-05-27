@@ -14,4 +14,6 @@ export const employeeKeys = {
   details: () => [...employeeKeys.all, "detail"],
   detail: (id) => [...employeeKeys.details(), id],
   partialDetails: () => [...employeeKeys.all, "partialDetails"],
+  fetchByEmployeeNum: () => [...employeeKeys.all, "fetchByEmployeeNum"],
+  basicInfo: () => [...employeeKeys.all, "basicInfo"],
 };
