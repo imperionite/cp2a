@@ -1,3 +1,4 @@
+// AttendanceService.java
 package com.imperionite.cp2a.services;
 
 import java.math.BigDecimal;
@@ -8,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.RoundingMode;
+import java.time.YearMonth; // Import YearMonth
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.imperionite.cp2a.dtos.WeeklyCutoffDTO;
+import com.imperionite.cp2a.dtos.MonthlyCutoffDTO;
 import com.imperionite.cp2a.entities.Attendance;
 import com.imperionite.cp2a.repositories.AttendanceRepository;
 
@@ -65,14 +68,14 @@ public class AttendanceService {
     /**
      * Calculates the total work hours for a specific employee within a given week,
      * considering a 10-minute grace period for late login.
-     * 
-     * For each day, the total worked hours are calculated by subtracting the login
+     * * For each day, the total worked hours are calculated by subtracting the
+     * login
      * time from the logout time. If the employee logs in after the grace period
      * (8:10 AM), the minutes they are late are deducted from their worked hours.
+     * * @param employeeNumber The employee number.
      * 
-     * @param employeeNumber The employee number.
-     * @param startDate      The start date (Monday) of the week.
-     * @param endDate        The end date (Sunday) of the week.
+     * @param startDate The start date (Monday) of the week.
+     * @param endDate   The end date (Sunday) of the week.
      * @return The total worked hours in BigDecimal format, including deductions for
      *         late login.
      * @throws IllegalArgumentException If the provided dates are not a valid
@@ -124,6 +127,65 @@ public class AttendanceService {
     }
 
     /**
+     * Calculates the total work hours for a specific employee within a given month,
+     * considering a 10-minute grace period for late login.
+     * * For each day, the total worked hours are calculated by subtracting the
+     * login
+     * time from the logout time. If the employee logs in after the grace period
+     * (8:10 AM), the minutes they are late are deducted from their worked hours.
+     * * @param employeeNumber The employee number.
+     * 
+     * @param yearMonth The month and year for which to calculate hours.
+     * @return The total worked hours in BigDecimal format, including deductions for
+     *         late login.
+     * @throws IllegalArgumentException If the provided dates are not a valid
+     *                                  Monday-Sunday week.
+     */
+    public BigDecimal calculateMonthlyHours(String employeeNumber, YearMonth yearMonth) {
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
+
+        // Fetch attendance records for the given month
+        List<Attendance> attendances = attendanceRepository.findByEmployeeNumberAndDateBetween(employeeNumber,
+                startDate, endDate);
+
+        // Initialize total worked hours (in BigDecimal)
+        BigDecimal totalWorkedHours = BigDecimal.ZERO;
+
+        // Define the grace period end time (8:10 AM)
+        LocalTime gracePeriodEndTime = LocalTime.of(8, 10); // 8:10 AM
+
+        // Iterate over the attendance records and calculate the worked hours
+        for (Attendance attendance : attendances) {
+            // Calculate the total worked minutes (logOut - logIn)
+            long minutesWorked = ChronoUnit.MINUTES.between(attendance.getLogIn(), attendance.getLogOut());
+            BigDecimal workedHours = new BigDecimal(minutesWorked).divide(BigDecimal.valueOf(60), 2,
+                    RoundingMode.HALF_UP);
+
+            // Extract the login time (logIn is already a LocalTime, so no need to use
+            // toLocalTime())
+            LocalTime loginTime = attendance.getLogIn();
+
+            // Check if the employee logged in after the grace period (8:10 AM)
+            if (loginTime.isAfter(gracePeriodEndTime)) {
+                // Calculate how many minutes the employee was late
+                long minutesLate = ChronoUnit.MINUTES.between(gracePeriodEndTime, loginTime);
+
+                // Calculate deduction: Deduct the late minutes from the total worked hours
+                BigDecimal deduction = new BigDecimal(minutesLate).divide(BigDecimal.valueOf(60), 2,
+                        RoundingMode.HALF_UP);
+                workedHours = workedHours.subtract(deduction);
+            }
+
+            // Accumulate the total worked hours for the week
+            totalWorkedHours = totalWorkedHours.add(workedHours);
+        }
+
+        // Return the total worked hours for the month, including any deductions
+        return totalWorkedHours.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /**
      * Retrieves the available weekly cut-offs (start and end dates).
      * This method queries the database for the minimum and maximum attendance dates
      * and generates a list of weekly cut-off periods between those dates.
@@ -155,4 +217,46 @@ public class AttendanceService {
         return weeklyCutoffs;
     }
 
+    /**
+     * Retrieves the available monthly cut-offs (YearMonth, start date, and end
+     * date).
+     * This method queries the database for the minimum and maximum attendance dates
+     * and generates a list of monthly cut-off periods between those dates.
+     *
+     * @return A list of {@link MonthlyCutoffDTO} objects, each representing a month
+     *         with its YearMonth, start date, and end dates. Returns an empty list
+     *         if no
+     *         attendance records exist.
+     */
+    public List<MonthlyCutoffDTO> getMonthlyCutoffs() {
+        LocalDate minDate = attendanceRepository.findMinDate();
+        LocalDate maxDate = attendanceRepository.findMaxDate();
+
+        if (minDate == null || maxDate == null) {
+            return new ArrayList<>(); // Return empty list if no attendance records exist
+        }
+
+        List<MonthlyCutoffDTO> monthlyCutoffs = new ArrayList<>();
+        YearMonth currentMonth = YearMonth.from(minDate);
+
+        // Loop through months from minDate to maxDate
+        while (!currentMonth.isAfter(YearMonth.from(maxDate))) {
+            LocalDate monthStartDate = currentMonth.atDay(1);
+            LocalDate monthEndDate = currentMonth.atEndOfMonth();
+
+            // Adjust the start/end dates if they fall outside the actual min/max attendance
+            // dates
+            if (monthStartDate.isBefore(minDate)) {
+                monthStartDate = minDate;
+            }
+            if (monthEndDate.isAfter(maxDate)) {
+                monthEndDate = maxDate;
+            }
+
+            monthlyCutoffs.add(new MonthlyCutoffDTO(currentMonth, monthStartDate, monthEndDate));
+            currentMonth = currentMonth.plusMonths(1);
+        }
+
+        return monthlyCutoffs;
+    }
 }

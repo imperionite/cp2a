@@ -1,3 +1,4 @@
+// AttendanceController.java
 package com.imperionite.cp2a.controllers;
 
 import com.imperionite.cp2a.dtos.*;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth; // Import YearMonth
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -41,7 +43,7 @@ public class AttendanceController {
      * Accessible by all authenticated employees.
      *
      * @param attendanceRequest The request body containing the date, log-in, and
-     *                          log-out times.
+     * log-out times.
      * @param userDetails       The currently authenticated user's details.
      * @return A ResponseEntity with the appropriate HTTP status code and message.
      */
@@ -104,8 +106,8 @@ public class AttendanceController {
      *
      * @param userDetails The currently authenticated user's details.
      * @return A {@link ResponseEntity} containing a list of {@link WeeklyCutoffDTO}
-     *         objects, each representing a week with its start and end dates.
-     *         Returns a 401 Unauthorized if the user is not logged in.
+     * objects, each representing a week with its start and end dates.
+     * Returns a 401 Unauthorized if the user is not logged in.
      */
     @GetMapping("/weekly-cutoffs")
     public ResponseEntity<List<WeeklyCutoffDTO>> getWeeklyCutoffs(@AuthenticationPrincipal UserDetails userDetails) { // Use
@@ -115,6 +117,24 @@ public class AttendanceController {
         }
         List<WeeklyCutoffDTO> weeklyCutoffs = attendanceService.getWeeklyCutoffs();
         return ResponseEntity.ok(weeklyCutoffs);
+    }
+
+    /**
+     * Retrieves the available monthly cut-offs (YearMonth, start date, and end date).
+     * Accessible by all authenticated users (employees and admins).
+     *
+     * @param userDetails The currently authenticated user's details.
+     * @return A {@link ResponseEntity} containing a list of {@link MonthlyCutoffDTO}
+     * objects, each representing a month with its YearMonth, start date, and end dates.
+     * Returns a 401 Unauthorized if the user is not logged in.
+     */
+    @GetMapping("/monthly-cutoffs")
+    public ResponseEntity<List<MonthlyCutoffDTO>> getMonthlyCutoffs(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        List<MonthlyCutoffDTO> monthlyCutoffs = attendanceService.getMonthlyCutoffs();
+        return ResponseEntity.ok(monthlyCutoffs);
     }
 
     /**
@@ -172,7 +192,7 @@ public class AttendanceController {
      * @param startDate      The start date (Monday) of the week.
      * @param endDate        The end date (Sunday) of the week.
      * @return A ResponseEntity containing the total work hours in JSON format or an
-     *         error message.
+     * error message.
      */
     @GetMapping("/employee/{employeeNumber}/weekly-hours")
     @PreAuthorize("#employeeNumber == authentication.name or hasRole('ADMIN')")
@@ -202,4 +222,39 @@ public class AttendanceController {
         }
     }
 
+    /**
+     * Calculates the total work hours for a specific employee within a given month.
+     * Accessible by employees themselves and admins. Employees can only access
+     * their own records. Returns the result in JSON format: {"total_monthly_worked_hours": value}.
+     *
+     * @param employeeNumber The employee number.
+     * @param yearMonth      The month and year for which to calculate hours (e.g., "2023-01").
+     * @return A ResponseEntity containing the total work hours in JSON format or an
+     * error message.
+     */
+    @GetMapping("/employee/{employeeNumber}/monthly-hours")
+    @PreAuthorize("#employeeNumber == authentication.name or hasRole('ADMIN')")
+    public ResponseEntity<?> calculateMonthlyHours(
+            @PathVariable String employeeNumber,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) { // Use YearMonth and specify pattern
+
+        try {
+            BigDecimal totalHours = attendanceService.calculateMonthlyHours(employeeNumber, yearMonth);
+
+            Map<String, BigDecimal> response = new HashMap<>();
+            response.put("total_monthly_worked_hours", totalHours);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid year month provided: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+
+        } catch (Exception e) {
+            logger.error("Error calculating monthly hours: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error calculating monthly hours: " + e.getMessage());
+        }
+    }
 }

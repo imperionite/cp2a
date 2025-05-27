@@ -56,8 +56,6 @@ const EmployeesTable = ({ isAdmin }) => {
         "PhilHealth",
         "TIN",
         "Pag-IBIG",
-        "Username",
-        "Admin",
       ]
     : ["Employee Number", "First Name", "Last Name", "Birthday"];
 
@@ -99,8 +97,6 @@ const EmployeesTable = ({ isAdmin }) => {
                     <TableCell>{emp.philhealth}</TableCell>
                     <TableCell>{emp.tin}</TableCell>
                     <TableCell>{emp.pagibig}</TableCell>
-                    <TableCell>{emp.user?.username}</TableCell>
-                    <TableCell>{emp.user?.isAdmin ? "Yes" : "No"}</TableCell>
                   </>
                 ) : (
                   <TableCell>{emp.birthday}</TableCell>

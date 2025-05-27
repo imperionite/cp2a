@@ -1,7 +1,9 @@
+// DeductionsController.java
 package com.imperionite.cp2a.controllers;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth; // Import YearMonth
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +30,8 @@ public class DeductionsController {
     @Autowired
     private DeductionsService deductionsService;
 
+    // --- WEEKLY DEDUCTION ENDPOINTS (EXISTING) ---
+
     /**
      * Calculates the weekly SSS deduction for a specific employee.
      * Accessible by employees themselves (for their own deduction) and admins
@@ -35,14 +39,14 @@ public class DeductionsController {
      *
      * @param userDetails    The currently authenticated user's details.
      * @param employeeNumber The employee number for whom to calculate the
-     *                       deduction.
-     *                       Required for admins, optional for employees.
+     * deduction.
+     * Required for admins, optional for employees.
      * @param startDate      The start date (Monday) of the week.
      * @param endDate        The end date (Sunday) of the week.
      * @return A ResponseEntity containing the weekly SSS deduction in JSON format
-     *         or an error message.
+     * or an error message.
      */
-    @GetMapping("/sss")
+    @GetMapping("/weekly/sss") // Changed mapping to distinguish from monthly
     public ResponseEntity<?> calculateWeeklySssDeduction(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) String employeeNumber, // Make employeeNumber optional
@@ -59,7 +63,7 @@ public class DeductionsController {
 
         if (!isAdmin && employeeNumber != null && !employeeNumber.equals(loggedInEmployeeNumber)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to calculate the salary for another employee.");
+                    .body("You are not authorized to calculate the deduction for another employee.");
         }
 
         // If employeeNumber is not provided by an employee, use their own number
@@ -79,9 +83,9 @@ public class DeductionsController {
             logger.error("Invalid date range or employee: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error calculating net weekly salary: {}", e.getMessage(), e);
+            logger.error("Error calculating weekly SSS deduction: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error calculating net weekly salary: " + e.getMessage());
+                    .body("Error calculating weekly SSS deduction: " + e.getMessage());
         }
     }
 
@@ -92,14 +96,14 @@ public class DeductionsController {
      *
      * @param userDetails    The currently authenticated user's details.
      * @param employeeNumber The employee number for whom to calculate the
-     *                       deduction.
-     *                       Required for admins, optional for employees.
+     * deduction.
+     * Required for admins, optional for employees.
      * @param startDate      The start date (Monday) of the week.
      * @param endDate        The end date (Sunday) of the week.
      * @return A ResponseEntity containing the weekly PhilHealth deduction in JSON
-     *         format or an error message.
+     * format or an error message.
      */
-    @GetMapping("/philhealth")
+    @GetMapping("/weekly/philhealth") // Changed mapping
     public ResponseEntity<?> calculateWeeklyPhilHealthDeduction(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) String employeeNumber,
@@ -116,7 +120,7 @@ public class DeductionsController {
 
         if (!isAdmin && employeeNumber != null && !employeeNumber.equals(loggedInEmployeeNumber)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to calculate the salary for another employee.");
+                    .body("You are not authorized to calculate the deduction for another employee.");
         }
 
         // If employeeNumber is not provided by an employee, use their own number
@@ -138,9 +142,9 @@ public class DeductionsController {
             logger.error("Invalid date range or employee: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error calculating net weekly salary: {}", e.getMessage(), e);
+            logger.error("Error calculating weekly PhilHealth deduction: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error calculating net weekly salary: " + e.getMessage());
+                    .body("Error calculating weekly PhilHealth deduction: " + e.getMessage());
         }
     }
 
@@ -151,14 +155,14 @@ public class DeductionsController {
      *
      * @param userDetails    The currently authenticated user's details.
      * @param employeeNumber The employee number for whom to calculate the
-     *                       deduction.
-     *                       Required for admins, optional for employees.
+     * deduction.
+     * Required for admins, optional for employees.
      * @param startDate      The start date (Monday) of the week.
      * @param endDate        The end date (Sunday) of the week.
      * @return A ResponseEntity containing the weekly Pag-Ibig deduction in JSON
-     *         format or an error message.
+     * format or an error message.
      */
-    @GetMapping("/pagibig")
+    @GetMapping("/weekly/pagibig") // Changed mapping
     public ResponseEntity<?> calculateWeeklyPagIbigDeduction(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) String employeeNumber,
@@ -175,7 +179,7 @@ public class DeductionsController {
 
         if (!isAdmin && employeeNumber != null && !employeeNumber.equals(loggedInEmployeeNumber)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to calculate the salary for another employee.");
+                    .body("You are not authorized to calculate the deduction for another employee.");
         }
 
         // If employeeNumber is not provided by an employee, use their own number
@@ -196,43 +200,23 @@ public class DeductionsController {
             logger.error("Invalid date range or employee: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error calculating net weekly salary: {}", e.getMessage(), e);
+            logger.error("Error calculating weekly Pag-Ibig deduction: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error calculating net weekly salary: " + e.getMessage());
+                    .body("Error calculating weekly Pag-Ibig deduction: " + e.getMessage());
         }
     }
 
     /**
      * Calculates the weekly withholding tax for the authenticated employee.
-     * The withholding tax is computed based on the employee's taxable income
-     * after deductions for SSS, Pag-ibig, and PhilHealth, using weekly tax
-     * brackets.
-     * 
-     * The weekly tax rate is applied based on the taxable income:
-     * - 20% in excess of 4,813 (for income between 4,813 and 7,692)
-     * - 577 plus 25% in excess of 7,692 (for income between 7,692 and 15,385)
-     * - 2,502 plus 30% in excess of 15,385 (for income between 15,385 and 38,462)
-     * - 9,423 plus 32% in excess of 38,462 (for income between 38,462 and 153,846)
-     * - 46,385 plus 35% in excess of 153,846 (for income above 153,846)
-     * * Calculates the weekly withholding tax based on taxable income.
-     * The tax is computed using weekly-adjusted tax brackets derived from the
-     * monthly tax table.
-     *
-     * Weekly tax brackets (derived by dividing monthly brackets by 4.33):
-     * - "4,813 and below" => No tax
-     * - "4,813 to below 7,692" => 20% of the amount in excess of 4,813
-     * - "7,692 to below 15,385" => 577 + 25% of the amount in excess of 7,692
-     * - "15,385 to below 38,462" => 2,502 + 30% of the amount in excess of 15,385
-     * - "38,462 to below 153,846" => 9,423 + 32% of the amount in excess of 38,462
-     * - "153,846 and above" => 46,385 + 35% of the amount in excess of 153,846
      *
      * @param userDetails The currently authenticated user's details.
      * @param startDate   The start date (Monday) of the week.
      * @param endDate     The end date (Sunday) of the week.
+     * @param employeeNumber Optional employee number (for admin use).
      * @return A ResponseEntity containing the weekly withholding tax in JSON format
-     *         or an error message.
+     * or an error message.
      */
-    @GetMapping("/weekly-withholding-tax")
+    @GetMapping("/weekly/withholding-tax") // Changed mapping
     public ResponseEntity<?> calculateWeeklyWithholdingTax(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -266,13 +250,226 @@ public class DeductionsController {
             return ResponseEntity.ok(response);
 
         } catch (IllegalArgumentException e) {
-            logger.error("Error retrieving employee data: {}", e.getMessage());
+            logger.error("Error retrieving employee data or invalid date range: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error calculating withholding tax: {}", e.getMessage(), e);
+            logger.error("Error calculating weekly withholding tax: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error calculating withholding tax: " + e.getMessage());
+                    .body("Error calculating weekly withholding tax: " + e.getMessage());
         }
     }
 
+    // --- MONTHLY DEDUCTION ENDPOINTS (NEW) ---
+
+    /**
+     * Calculates the monthly SSS deduction for a specific employee.
+     * Accessible by employees themselves (for their own deduction) and admins
+     * (for any employee).
+     *
+     * @param userDetails    The currently authenticated user's details.
+     * @param employeeNumber The employee number for whom to calculate the
+     * deduction.
+     * Required for admins, optional for employees.
+     * @param yearMonth      The month and year for the calculation (e.g., "2023-01").
+     * @return A ResponseEntity containing the monthly SSS deduction in JSON format
+     * or an error message.
+     */
+    @GetMapping("/monthly/sss")
+    public ResponseEntity<?> calculateMonthlySssDeduction(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) String employeeNumber,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String loggedInEmployeeNumber = userDetails.getUsername();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && employeeNumber != null && !employeeNumber.equals(loggedInEmployeeNumber)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to calculate the deduction for another employee.");
+        }
+
+        if (!isAdmin) {
+            employeeNumber = loggedInEmployeeNumber;
+        }
+
+        try {
+            BigDecimal sssDeduction = deductionsService.calculateMonthlySssDeduction(employeeNumber, yearMonth);
+
+            Map<String, BigDecimal> response = new HashMap<>();
+            response.put("monthly_sss_deduction", sssDeduction);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid employee or salary data: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error calculating monthly SSS deduction: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error calculating monthly SSS deduction: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Calculates the monthly PhilHealth deduction for a specific employee.
+     * Accessible by employees themselves (for their own deduction) and admins
+     * (for any employee).
+     *
+     * @param userDetails    The currently authenticated user's details.
+     * @param employeeNumber The employee number for whom to calculate the
+     * deduction.
+     * Required for admins, optional for employees.
+     * @param yearMonth      The month and year for the calculation (e.g., "2023-01").
+     * @return A ResponseEntity containing the monthly PhilHealth deduction in JSON
+     * format or an error message.
+     */
+    @GetMapping("/monthly/philhealth")
+    public ResponseEntity<?> calculateMonthlyPhilHealthDeduction(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) String employeeNumber,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String loggedInEmployeeNumber = userDetails.getUsername();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && employeeNumber != null && !employeeNumber.equals(loggedInEmployeeNumber)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to calculate the deduction for another employee.");
+        }
+
+        if (!isAdmin) {
+            employeeNumber = loggedInEmployeeNumber;
+        }
+
+        try {
+            BigDecimal philHealthDeduction = deductionsService.calculateMonthlyPhilHealthDeduction(employeeNumber,
+                    yearMonth);
+
+            Map<String, BigDecimal> response = new HashMap<>();
+            response.put("monthly_philhealth_deduction", philHealthDeduction);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid employee or salary data: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error calculating monthly PhilHealth deduction: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error calculating monthly PhilHealth deduction: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Calculates the monthly Pag-Ibig deduction for a specific employee.
+     * Accessible by employees themselves (for their own deduction) and admins
+     * (for any employee).
+     *
+     * @param userDetails    The currently authenticated user's details.
+     * @param employeeNumber The employee number for whom to calculate the
+     * deduction.
+     * Required for admins, optional for employees.
+     * @param yearMonth      The month and year for the calculation (e.g., "2023-01").
+     * @return A ResponseEntity containing the monthly Pag-Ibig deduction in JSON
+     * format or an error message.
+     */
+    @GetMapping("/monthly/pagibig")
+    public ResponseEntity<?> calculateMonthlyPagIbigDeduction(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) String employeeNumber,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String loggedInEmployeeNumber = userDetails.getUsername();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && employeeNumber != null && !employeeNumber.equals(loggedInEmployeeNumber)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to calculate the deduction for another employee.");
+        }
+
+        if (!isAdmin) {
+            employeeNumber = loggedInEmployeeNumber;
+        }
+
+        try {
+            BigDecimal pagIbigDeduction = deductionsService.calculateMonthlyPagIbigDeduction(employeeNumber, yearMonth);
+
+            Map<String, BigDecimal> response = new HashMap<>();
+            response.put("monthly_pagibig_deduction", pagIbigDeduction);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid employee or salary data: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error calculating monthly Pag-Ibig deduction: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error calculating monthly Pag-Ibig deduction: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Calculates the monthly withholding tax for the authenticated employee.
+     *
+     * @param userDetails The currently authenticated user's details.
+     * @param yearMonth   The month and year for the calculation (e.g., "2023-01").
+     * @param employeeNumber Optional employee number (for admin use).
+     * @return A ResponseEntity containing the monthly withholding tax in JSON format
+     * or an error message.
+     */
+    @GetMapping("/monthly/withholding-tax")
+    public ResponseEntity<?> calculateMonthlyWithholdingTax(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,
+            @RequestParam(required = false) String employeeNumber) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String loggedInEmployeeNumber = userDetails.getUsername();
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && employeeNumber != null && !employeeNumber.equals(loggedInEmployeeNumber)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only calculate your own withholding tax.");
+        }
+
+        if (!isAdmin) {
+            employeeNumber = loggedInEmployeeNumber;
+        }
+
+        try {
+            BigDecimal monthlyWithholdingTax = deductionsService.calculateMonthlyWithholdingTax(employeeNumber, yearMonth);
+
+            Map<String, BigDecimal> response = new HashMap<>();
+            response.put("monthly_withholding_tax", monthlyWithholdingTax);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Error retrieving employee data or invalid year month: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error calculating monthly withholding tax: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error calculating monthly withholding tax: " + e.getMessage());
+        }
+    }
 }

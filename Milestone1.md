@@ -2,10 +2,10 @@
 
 CP2A is a direct continuation and enhancement of the earlier course project, [cp1](https://github.com/imperionite/cp1), which laid the foundation for the MotorPH Employee Management System. The initial phase (cp1) developed a RESTful backend using Spring Boot and MySQL, implementing key payroll features such as:
 
-- Employee information management  
-- Attendance tracking  
-- Automated payroll calculations  
-- Basic deductions and salary computation  
+- Employee information management
+- Attendance tracking
+- Automated payroll calculations
+- Basic deductions and salary computation
 
 The design rationale, API documentation, and architectural structure from cp1 have been extended in this repository, ensuring consistency and a clear evolution of the system.
 
@@ -14,14 +14,14 @@ CP2A addresses the requirements outlined in MotorPH's Change Requests Form:
 - [MPHCR01-Feature 1](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=475634283#gid=475634283)
 - [MPHCR02-Feature 2](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=1902740868#gid=1902740868)
 - [MPHCR03-Feature 3](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=28244578#gid=28244578)
-- [MPHCR04-Feature 4](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867) 
+- [MPHCR04-Feature 4](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867)
 
 For foundational documentation, refer to the [cp1 repository](https://github.com/imperionite/cp1). Essential background and initial API details are included here or referenced to avoid duplication.
 
 ### What’s New in CP2A
 
-- **Frontend Integration:** A new React frontend (in the `GUI` folder) built with Vite, running independently and communicating with the backend via REST API and CORS.  
-- **Improved Modularity:** Decoupled backend and frontend for easier deployment and scalability.  
+- **Frontend Integration:** A new React frontend (in the `GUI` folder) built with Vite, running independently and communicating with the backend via REST API and CORS.
+- **Improved Modularity:** Decoupled backend and frontend for easier deployment and scalability.
 - **Updated Documentation:** Enhanced and updated documentation, with references to class diagrams ([see here](https://github.com/imperionite/cp2a/blob/main/CLASS_DIAGRAM.md)) and new features added in this phase.
 
 ---
@@ -34,7 +34,7 @@ The GUI or the frontend of this app runs on port `5173` and consuming the REST A
 
 ![Login](https://drive.google.com/uc?id=11DNKKW9q_hB_-f_X4J73cmua9xE_T0Us)
 
-**Note**: Regarding the requirement for [MPHCR04](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867) features related to authentication, my prerequisite project in `CP 1` and this current project have `user authentication` enabled by default, along with other features, due to the design and development of the backend API of this app. Additionally, a simple implementation of role-based access control distinguishes between admin users and regular users or employees. To elaborate, although it was not my intention to implement this feature in advance without understanding the requirements of CP 2's project deliverable, but I am glad that I made the decision to do so before it was explicitly required. 
+**Note**: Regarding the requirement for [MPHCR04](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=299960867#gid=299960867) features related to authentication, my prerequisite project in `CP 1` and this current project have `user authentication` enabled by default, along with other features, due to the design and development of the backend API of this app. Additionally, a simple implementation of role-based access control distinguishes between admin users and regular users or employees. To elaborate, although it was not my intention to implement this feature in advance without understanding the requirements of CP 2's project deliverable, but I am glad that I made the decision to do so before it was explicitly required.
 
 For this development, JWT access & refresh tokens and other user's info are save in localstorage as `jwtAtom`.
 
@@ -56,11 +56,14 @@ The button links provided for employee number column are clickable and will be r
 
 4. **Employee GUI: Admin User View**: Rendered the complete employment employee details of certain employee.
 
-![Employe GUI for Admin](https://drive.google.com/uc?id=1oS4GTcasfN9Yeb5beIk-pik17xb925pK)
+   - 4.a
+     ![Employe GUI for Admin](https://drive.google.com/uc?id=1C2rG7ximAaHkwMGOGEhNyFeKFAXxTRF7)
+   - 4.b
+     ![Employe GUI for Admin](https://drive.google.com/uc?id=1k4Gobkr5ePjT48kPIq9reLOf7SrWSAvg)
 
 ---
 
-5. **Employees GUI: Regular Employee/User View**: View after `regular user` authenticated in the system and redirected to `Employees` route. Regular user or employee has an employee list view also but only selected fields like employee number, first name, last name and birthday fields are included.
+5.  **Employees GUI: Regular Employee/User View**: View after `regular user` authenticated in the system and redirected to `Employees` route. Regular user or employee has an employee list view also but only selected fields like employee number, first name, last name and birthday fields are included.
 
 ![Employee GUI for regular employee](https://drive.google.com/uc?id=1OJ1JUT58MhQLTLe4CIk7Yp-xiMGKoNKz)
 

@@ -148,6 +148,28 @@ const getEmployeeByEmployeeNumber = async (employeeNumber) => {
   }
 };
 
+const getMonthlyCutoffs = async () => {
+  try {
+    const response = await http.get("/api/attendance/monthly-cutoffs"); // year-month
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching monthly cut-off:", error);
+    throw new Error("Failed to fetch monthly cut-off!");
+  }
+};
+
+const getMonthlyNet = async (employeeNumber, yearMonth) => {
+  try {
+    const response = await http.get(
+      `/api/salary/monthly/net?employeeNumber=${employeeNumber}&yearMonth=${yearMonth}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching calculating employee salary", error);
+    throw new Error("Failed calculating employee salaries and deductions!");
+  }
+};
+
 export {
   login,
   // signup,
@@ -157,4 +179,6 @@ export {
   getEmployeePartialDetails,
   getEmployeeBasicInfo,
   getEmployeeByEmployeeNumber,
+  getMonthlyCutoffs,
+  getMonthlyNet,
 };

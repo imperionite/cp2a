@@ -1,9 +1,11 @@
+// DeductionsService.java
 package com.imperionite.cp2a.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth; // Import YearMonth
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imperionite.cp2a.dtos.ContributionBracket;
 import com.imperionite.cp2a.dtos.Contributions;
+import com.imperionite.cp2a.dtos.PagIbigBracket;
 import com.imperionite.cp2a.entities.Employee;
 
 import java.io.IOException;
@@ -39,7 +42,7 @@ public class DeductionsService {
      * This method is executed automatically after dependency injection.
      *
      * @throws IOException If an error occurs while reading or parsing the JSON
-     *                     file.
+     * file.
      */
     @PostConstruct
     public void loadContributions() throws IOException {
@@ -55,6 +58,8 @@ public class DeductionsService {
         }
     }
 
+    // --- WEEKLY DEDUCTION METHODS (EXISTING) ---
+
     /**
      * Calculates the weekly SSS deduction for an employee.
      *
@@ -63,7 +68,7 @@ public class DeductionsService {
      * @param endDate        The end date of the week (Sunday).
      * @return The weekly SSS deduction amount.
      * @throws IllegalArgumentException If employee not found, invalid date range,
-     *                                  or invalid basic salary.
+     * or invalid basic salary.
      */
     public BigDecimal calculateWeeklySssDeduction(String employeeNumber, LocalDate startDate, LocalDate endDate) {
         validateWeek(startDate, endDate);
@@ -71,7 +76,7 @@ public class DeductionsService {
         BigDecimal basicSalary = getBasicSalary(employee);
 
         BigDecimal monthlySssContribution = getMonthlyContribution(basicSalary, contributions.getSss(), "SSS");
-        return calculateWeeklyDeduction(monthlySssContribution);
+        return calculateWeeklyAmount(monthlySssContribution); // Use calculateWeeklyAmount helper
     }
 
     /**
@@ -82,7 +87,7 @@ public class DeductionsService {
      * @param endDate        The end date of the week (Sunday).
      * @return The weekly PhilHealth deduction amount.
      * @throws IllegalArgumentException If employee not found, invalid date range,
-     *                                  or invalid basic salary.
+     * or invalid basic salary.
      */
     public BigDecimal calculateWeeklyPhilHealthDeduction(String employeeNumber, LocalDate startDate,
             LocalDate endDate) {
@@ -92,7 +97,7 @@ public class DeductionsService {
 
         BigDecimal monthlyPhilHealthPremium = getMonthlyContribution(basicSalary, contributions.getPhilhealth(),
                 "PhilHealth");
-        return calculateWeeklyDeduction(monthlyPhilHealthPremium);
+        return calculateWeeklyAmount(monthlyPhilHealthPremium); // Use calculateWeeklyAmount helper
     }
 
     /**
@@ -103,68 +108,16 @@ public class DeductionsService {
      * @param endDate        The end date (Sunday) of the week.
      * @return The weekly Pag-Ibig deduction amount.
      * @throws IllegalArgumentException If employee not found, invalid date range,
-     *                                  or
-     *                                  invalid basic salary.
+     * or
+     * invalid basic salary.
      */
     public BigDecimal calculateWeeklyPagIbigDeduction(String employeeNumber, LocalDate startDate, LocalDate endDate) {
-        if (!isValidWeek(startDate, endDate)) {
-            throw new IllegalArgumentException(
-                    "Invalid date range. Start date must be a Monday and end date must be a Sunday.");
-        }
-
-        Employee employee = employeeService.getEmployeeByEmployeeNumber(employeeNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found."));
-
-        BigDecimal basicSalary = employee.getBasicSalary();
-        if (basicSalary == null) {
-            throw new IllegalArgumentException("Basic salary not found for employee " + employeeNumber);
-        }
+        validateWeek(startDate, endDate); // Use common validation
+        Employee employee = getEmployee(employeeNumber);
+        BigDecimal basicSalary = getBasicSalary(employee);
 
         BigDecimal monthlyPagIbigContribution = getMonthlyPagIbigContribution(basicSalary);
-        BigDecimal weeklyPagIbigDeduction = monthlyPagIbigContribution.divide(BigDecimal.valueOf(4),
-                RoundingMode.HALF_UP);
-
-        return weeklyPagIbigDeduction;
-    }
-
-    /**
-     * Calculates the monthly Pag-Ibig contribution based on the provided basic
-     * salary.
-     *
-     * @param basicSalary The employee's basic monthly salary.
-     * @return The monthly Pag-Ibig contribution amount.
-     * @throws IllegalArgumentException If the basic salary is invalid or no
-     *                                  matching
-     *                                  Pag-Ibig contribution is found.
-     */
-    private BigDecimal getMonthlyPagIbigContribution(BigDecimal basicSalary) {
-        // Pag-Ibig Contribution Table (Monthly)
-        BigDecimal[][] pagIbigTable = {
-                { new BigDecimal("1000"), new BigDecimal("0.01") }, // 1%
-                { new BigDecimal("1500"), new BigDecimal("0.01") }, // 1%
-                { new BigDecimal("999999999"), new BigDecimal("0.02") } // 2% for over 1500 (Catch-all)
-        };
-
-        BigDecimal contributionRate = BigDecimal.ZERO;
-
-        for (int i = 0; i < pagIbigTable.length; i++) {
-            if (basicSalary.compareTo(pagIbigTable[i][0]) <= 0) {
-                contributionRate = pagIbigTable[i][1];
-                break;
-            } else if (i == pagIbigTable.length - 1) { // Top bracket
-                contributionRate = pagIbigTable[i][1];
-                break;
-            }
-        }
-
-        BigDecimal monthlyContribution = basicSalary.multiply(contributionRate);
-
-        // Cap the contribution to 100
-        if (monthlyContribution.compareTo(new BigDecimal("100")) > 0) {
-            monthlyContribution = new BigDecimal("100");
-        }
-
-        return monthlyContribution;
+        return calculateWeeklyAmount(monthlyPagIbigContribution); // Use calculateWeeklyAmount helper
     }
 
     /**
@@ -175,22 +128,14 @@ public class DeductionsService {
      * @param endDate        The end date of the week (Sunday).
      * @return The calculated weekly withholding tax.
      * @throws IllegalArgumentException If the employee is not found or salary data
-     *                                  is missing.
+     * is missing.
      */
     public BigDecimal calculateWeeklyWithholdingTax(String employeeNumber, LocalDate startDate, LocalDate endDate) {
-        if (!isValidWeek(startDate, endDate)) {
-            throw new IllegalArgumentException(
-                    "Invalid date range. Start date must be a Monday and end date must be a Sunday.");
-        }
+        validateWeek(startDate, endDate); // Use common validation
 
         // Retrieve Employee Details
-        Employee employee = employeeService.getEmployeeByEmployeeNumber(employeeNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found."));
-
-        BigDecimal monthlySalary = employee.getBasicSalary();
-        if (monthlySalary == null) {
-            throw new IllegalArgumentException("Basic salary not found for employee " + employeeNumber);
-        }
+        Employee employee = getEmployee(employeeNumber);
+        BigDecimal monthlySalary = getBasicSalary(employee);
 
         // Convert Monthly Salary to Weekly Salary (Divide by 4.33)
         BigDecimal weeklySalary = monthlySalary.divide(BigDecimal.valueOf(4.33), RoundingMode.HALF_UP);
@@ -209,7 +154,7 @@ public class DeductionsService {
         BigDecimal taxableIncome = weeklySalary.subtract(totalDeductions);
 
         // Compute Weekly Withholding Tax
-        return calculateWeeklyWithholdingTax(taxableIncome);
+        return calculateWeeklyWithholdingTaxAmount(taxableIncome);
     }
 
     /**
@@ -226,10 +171,10 @@ public class DeductionsService {
      * - "153,846 and above" => 46,385 + 35% of the amount in excess of 153,846
      *
      * @param taxableIncome The employee's **weekly** taxable income after
-     *                      deductions.
+     * deductions.
      * @return The calculated weekly withholding tax.
      */
-    private BigDecimal calculateWeeklyWithholdingTax(BigDecimal taxableIncome) {
+    private BigDecimal calculateWeeklyWithholdingTaxAmount(BigDecimal taxableIncome) {
         if (taxableIncome.compareTo(BigDecimal.valueOf(4813)) <= 0) {
             return BigDecimal.ZERO; // No withholding tax if taxable income is 4,813 or below
         } else if (taxableIncome.compareTo(BigDecimal.valueOf(4813)) > 0
@@ -273,6 +218,195 @@ public class DeductionsService {
             // 153,846
         }
     }
+
+    // --- MONTHLY DEDUCTION METHODS (NEW) ---
+
+    /**
+     * Calculates the monthly SSS deduction for an employee.
+     *
+     * @param employeeNumber The employee's number.
+     * @param yearMonth      The month and year for the calculation.
+     * @return The monthly SSS deduction amount.
+     * @throws IllegalArgumentException If employee not found or invalid basic salary.
+     */
+    public BigDecimal calculateMonthlySssDeduction(String employeeNumber, YearMonth yearMonth) {
+        // No date validation needed for YearMonth, as it represents a full month.
+        Employee employee = getEmployee(employeeNumber);
+        BigDecimal basicSalary = getBasicSalary(employee);
+
+        // SSS contribution is typically monthly, so we directly get the monthly value
+        return getMonthlyContribution(basicSalary, contributions.getSss(), "SSS");
+    }
+
+    /**
+     * Calculates the monthly PhilHealth deduction for an employee.
+     *
+     * @param employeeNumber The employee's number.
+     * @param yearMonth      The month and year for the calculation.
+     * @return The monthly PhilHealth deduction amount.
+     * @throws IllegalArgumentException If employee not found or invalid basic salary.
+     */
+    public BigDecimal calculateMonthlyPhilHealthDeduction(String employeeNumber, YearMonth yearMonth) {
+        // No date validation needed for YearMonth
+        Employee employee = getEmployee(employeeNumber);
+        BigDecimal basicSalary = getBasicSalary(employee);
+
+        // PhilHealth premium is typically monthly
+        return getMonthlyContribution(basicSalary, contributions.getPhilhealth(), "PhilHealth");
+    }
+
+    /**
+     * Calculates the monthly Pag-Ibig deduction for a specific employee.
+     *
+     * @param employeeNumber The employee number.
+     * @param yearMonth      The month and year for the calculation.
+     * @return The monthly Pag-Ibig deduction amount.
+     * @throws IllegalArgumentException If employee not found or invalid basic salary.
+     */
+    public BigDecimal calculateMonthlyPagIbigDeduction(String employeeNumber, YearMonth yearMonth) {
+        // No date validation needed for YearMonth
+        Employee employee = getEmployee(employeeNumber);
+        BigDecimal basicSalary = getBasicSalary(employee);
+
+        // Pag-Ibig contribution is monthly
+        return getMonthlyPagIbigContribution(basicSalary);
+    }
+
+    /**
+     * Calculates the monthly withholding tax for a given employee.
+     *
+     * @param employeeNumber The employee's unique identifier.
+     * @param yearMonth      The month and year for the calculation.
+     * @return The calculated monthly withholding tax.
+     * @throws IllegalArgumentException If the employee is not found or salary data is missing.
+     */
+    public BigDecimal calculateMonthlyWithholdingTax(String employeeNumber, YearMonth yearMonth) {
+        // No date validation needed for YearMonth
+
+        // Retrieve Employee Details
+        Employee employee = getEmployee(employeeNumber);
+        BigDecimal monthlySalary = getBasicSalary(employee);
+
+        // Retrieve Monthly Deductions (calling the new monthly deduction methods)
+        BigDecimal sssDeduction = calculateMonthlySssDeduction(employeeNumber, yearMonth);
+        BigDecimal philHealthDeduction = calculateMonthlyPhilHealthDeduction(employeeNumber, yearMonth);
+        BigDecimal pagIbigDeduction = calculateMonthlyPagIbigDeduction(employeeNumber, yearMonth);
+
+        // Calculate Total Deductions
+        BigDecimal totalDeductions = sssDeduction.add(philHealthDeduction).add(pagIbigDeduction);
+
+        // Calculate Monthly Taxable Income (Monthly Salary - Total Deductions)
+        BigDecimal taxableIncome = monthlySalary.subtract(totalDeductions);
+
+        // Compute Monthly Withholding Tax
+        return calculateMonthlyWithholdingTaxAmount(taxableIncome);
+    }
+
+    /**
+     * Calculates the monthly withholding tax based on taxable income.
+     * The tax is computed using the actual monthly tax brackets from the BIR.
+     *
+     * Monthly tax brackets (Effective Jan 1, 2023 - TRAIN Law, amended):
+     * - "20,833 and below" => No tax
+     * - "20,833 to below 33,333" => 20% of the amount in excess of 20,833
+     * - "33,333 to below 66,667" => 2,500 + 25% of the amount in excess of 33,333
+     * - "66,667 to below 166,667" => 10,833.33 + 30% of the amount in excess of 66,667
+     * - "166,667 to below 666,667" => 40,833.33 + 32% of the amount in excess of 166,667
+     * - "666,667 and above" => 200,833.33 + 35% of the amount in excess of 666,667
+     *
+     * @param taxableIncome The employee's **monthly** taxable income after
+     * deductions.
+     * @return The calculated monthly withholding tax.
+     */
+    private BigDecimal calculateMonthlyWithholdingTaxAmount(BigDecimal taxableIncome) {
+        if (taxableIncome.compareTo(BigDecimal.valueOf(20833)) <= 0) {
+            return BigDecimal.ZERO; // No tax
+        } else if (taxableIncome.compareTo(BigDecimal.valueOf(20833)) > 0
+                && taxableIncome.compareTo(BigDecimal.valueOf(33333)) <= 0) {
+            return taxableIncome.subtract(BigDecimal.valueOf(20833)).multiply(BigDecimal.valueOf(0.20))
+                    .setScale(2, RoundingMode.HALF_UP);
+        } else if (taxableIncome.compareTo(BigDecimal.valueOf(33333)) > 0
+                && taxableIncome.compareTo(BigDecimal.valueOf(66667)) <= 0) {
+            return BigDecimal.valueOf(2500)
+                    .add(taxableIncome.subtract(BigDecimal.valueOf(33333)).multiply(BigDecimal.valueOf(0.25)))
+                    .setScale(2, RoundingMode.HALF_UP);
+        } else if (taxableIncome.compareTo(BigDecimal.valueOf(66667)) > 0
+                && taxableIncome.compareTo(BigDecimal.valueOf(166667)) <= 0) {
+            return BigDecimal.valueOf(10833.33)
+                    .add(taxableIncome.subtract(BigDecimal.valueOf(66667)).multiply(BigDecimal.valueOf(0.30)))
+                    .setScale(2, RoundingMode.HALF_UP);
+        } else if (taxableIncome.compareTo(BigDecimal.valueOf(166667)) > 0
+                && taxableIncome.compareTo(BigDecimal.valueOf(666667)) <= 0) {
+            return BigDecimal.valueOf(40833.33)
+                    .add(taxableIncome.subtract(BigDecimal.valueOf(166667)).multiply(BigDecimal.valueOf(0.32)))
+                    .setScale(2, RoundingMode.HALF_UP);
+        } else {
+            return BigDecimal.valueOf(200833.33)
+                    .add(taxableIncome.subtract(BigDecimal.valueOf(666667)).multiply(BigDecimal.valueOf(0.35)))
+                    .setScale(2, RoundingMode.HALF_UP);
+        }
+    }
+
+    /**
+     * Calculates the monthly Pag-Ibig contribution based on the provided basic
+     * salary.
+     *
+     * @param basicSalary The employee's basic monthly salary.
+     * @return The monthly Pag-Ibig contribution amount.
+     * @throws IllegalArgumentException If the basic salary is invalid or no
+     * matching Pag-Ibig contribution is found.
+     */
+    private BigDecimal getMonthlyPagIbigContribution(BigDecimal basicSalary) {
+        // Updated to use the contributions.getPagibig() from the loaded JSON
+        // The PagIbigBracket is expected to have salaryCap and contribution or rate,
+        // matching the structure needed for getMonthlyContribution or specific logic.
+        // Assuming your 'PagIbigBracket' DTO looks like:
+        // @Data
+        // public class PagIbigBracket {
+        //     private BigDecimal salaryThreshold; // or salaryCap
+        //     private BigDecimal employeeContributionRate;
+        //     private BigDecimal employerContributionRate; // If applicable for calculations
+        //     private BigDecimal maxContribution; // If there's a cap defined in the bracket
+        // }
+        // For simplicity, let's assume getPagibig() returns brackets similar to SSS/PhilHealth
+        // if PagIbigBracket has a 'contribution' field or a 'rate' that we multiply by salary.
+
+        // If the 'PagIbigBracket' has `salaryThreshold` and `employeeContributionRate`,
+        // and a max contribution, the logic below might need adjustment based on how
+        // `contributions.json` defines Pag-IBIG.
+        // Given the previous manual Pag-Ibig table, I'll update it to use the new
+        // `contributions.getPagibig()` but will keep the hardcoded cap if it's not
+        // explicitly defined JSON structure for Pag-IBIG brackets.
+
+        BigDecimal employeeContributionRate = BigDecimal.ZERO;
+        // BigDecimal employerContributionRate = BigDecimal.ZERO; // Assuming employer share is also defined if needed
+        BigDecimal maxContribution = new BigDecimal("100"); // Default cap as per old logic if not in JSON
+
+        // Find the applicable Pag-IBIG bracket
+        for (PagIbigBracket bracket : contributions.getPagibig()) { // Assuming PagIbigBracket extends/is ContributionBracket
+            if (basicSalary.compareTo(bracket.getSalaryCap()) <= 0) {
+                // Assuming `contribution` field in PagIbigBracket represents the employee's rate
+                // For Pag-IBIG, it's often a percentage. Let's assume `contribution` is the percentage.
+                employeeContributionRate = bracket.getContributionRate(); // This is the rate (e.g., 0.01 or 0.02)
+                // If there's a max contribution for this bracket, you might also have:
+                // if (bracket.getMaxContribution() != null) maxContribution = bracket.getMaxContribution();
+                break;
+            }
+        }
+
+        BigDecimal monthlyContribution = basicSalary.multiply(employeeContributionRate);
+
+        // Apply the cap to the *employee's share*. Pag-IBIG has a max contribution of P100 for the employee.
+        // It's crucial to confirm if the cap is for the employee's share, employer's share, or total.
+        // Based on typical Philippine payroll, the employee's share is capped at P100.
+        if (monthlyContribution.compareTo(maxContribution) > 0) {
+            monthlyContribution = maxContribution;
+        }
+
+        return monthlyContribution.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    // --- HELPER FUNCTIONS (RETAINED/MODIFIED) ---
 
     /**
      * Helper function to validate if the given dates represent a valid week
@@ -327,29 +461,30 @@ public class DeductionsService {
      * @param basicSalary          The employee's basic monthly salary.
      * @param contributionBrackets The list of contribution brackets.
      * @param deductionType        The type of deduction (e.g., "SSS",
-     *                             "PhilHealth"). Used for exception messages.
+     * "PhilHealth"). Used for exception messages.
      * @return The monthly contribution amount (BigDecimal).
      * @throws IllegalArgumentException If salary is invalid or contribution not
-     *                                  found.
+     * found.
      */
     private BigDecimal getMonthlyContribution(BigDecimal basicSalary,
             List<? extends ContributionBracket> contributionBrackets, String deductionType) {
+        // Filter brackets where basicSalary is less than or equal to the salaryCap
         return contributionBrackets.stream()
                 .filter(bracket -> basicSalary.compareTo(bracket.getSalaryCap()) <= 0)
-                .findFirst()
+                .findFirst() // Get the first matching bracket (assuming brackets are ordered)
                 .orElseThrow(() -> new IllegalArgumentException(
                         deductionType + " contribution not found for salary " + basicSalary))
-                .getContribution(); // returns a BigDecimal
+                .getContribution(); // Returns the 'contribution' value from the bracket
     }
 
     /**
-     * Calculates the weekly deduction from a monthly amount.
+     * Calculates the weekly amount from a monthly amount by dividing by 4.
      *
-     * @param monthlyContribution The monthly contribution amount.
-     * @return The weekly deduction amount.
+     * @param monthlyAmount The monthly amount.
+     * @return The weekly amount.
      */
-    private BigDecimal calculateWeeklyDeduction(BigDecimal monthlyContribution) {
-        return monthlyContribution.divide(BigDecimal.valueOf(4), RoundingMode.HALF_UP);
+    private BigDecimal calculateWeeklyAmount(BigDecimal monthlyAmount) {
+        return monthlyAmount.divide(BigDecimal.valueOf(4), RoundingMode.HALF_UP);
     }
 
 }

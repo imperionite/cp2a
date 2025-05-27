@@ -1,6 +1,6 @@
 ### Variables ###
-@access=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMDAwMSIsImlhdCI6MTc0ODI2ODc3NiwiZXhwIjoxNzQ4MjcyMzc2fQ.w8B0TM45rdL2osdaDWkBJBnOEGGzP6JzQjMiAjwzKuQzYklZMma_Rbb1V9UUALRbyqr9BxKsOPTK4Y2DNn7E-A
-@adminAccess=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0ODMwNjczMCwiZXhwIjoxNzQ4MzEwMzMwfQ.fr_7qnP6HfC9kriXxqphnoqD_t-yBNOwbI1T1kIzZ3dkyuI8oasdvZeKhrfx-W_9pyYqMaNN-p4lJzvKyHUHcQ
+@access=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMDAzMiIsImlhdCI6MTc0ODMyOTgzMSwiZXhwIjoxNzQ4MzMzNDMxfQ.aijBKu44ScFNHsDyamiqaI1nLpfeWH1ghQXcyv2v2xz-nygUVn2984Co2GLVamswaYzHZqD-oS_2kNziOLh1yA
+@adminAccess=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0ODMzNjE2MCwiZXhwIjoxNzQ4MzM5NzYwfQ.cndGYaa5SCxkWCWzI-lZeeta0GBHacZHMsu0XbsWHxn-Tbp_4dR3xexzHjVsciTOOGL7ymDiYmTWzh5-OyqPjQ
 #####################################################################################################################
 
 ### USER and AUTH ###
@@ -10,7 +10,7 @@ POST http://localhost:8080/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "100011",
+    "username": "10032",
     "password": "passworD#1"
 }
 
@@ -41,9 +41,36 @@ Content-Type: application/json
 Authorization: Bearer {{access}}
 
 ### Fetch fetch employee by employee number - Admin only
-GET http://localhost:8080/api/employees/employeeNumber/10034 HTTP/1.1
+GET http://localhost:8080/api/employees/employeeNumber/10032 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{adminAccess}}
+
+###### ATTENDANCE, DEDUCTIONS & SALARY #### 
+
+### Get available monthly cut-off from the database - Auth user/admin
+GET http://localhost:8080/api/attendance/monthly-cutoffs
+Accept: application/json
+
+
+### Calculate gross monthly salary based on selected monthly cut-off - Auth user/admin
+### Auth user can only calculate their own gross monthly salary except for the admin
+### employeeNumber is required for admin user, logged-in auth user only uses the bearer token
+GET http://localhost:8080/api/salary/monthly/gross?employeeNumber=10032&yearMonth=2024-03
+Authorization: Bearer {{adminAccess}}
+Accept: application/json
+
+### Calculate gross monthly salary based on selected monthly cut-off - Auth user/admin
+### Auth user can only calculate their own gross monthly salary except for the admin
+GET http://localhost:8080/api/salary/monthly/gross?employeeNumber=10032&yearMonth=2024-03
+Authorization: Bearer {{access}}
+Accept: application/json
+
+### Calculate net monthly salary based on selected monthly cut-off - Auth user/admin
+### Auth user can only calculate their own gross monthly salary except for the admin
+### employeeNumber is required for admin user, logged-in auth user only uses the bearer token
+GET http://localhost:8080/api/salary/monthly/net?employeeNumber=10032&yearMonth=2024-04
+Authorization: Bearer {{access}}
+Accept: application/json
 
 
 
