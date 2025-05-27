@@ -26,7 +26,7 @@ For foundational documentation, refer to the [cp1 repository](https://github.com
 
 ### **App Demo**
 
-<iframe src="https://drive.google.com/file/d/1l-3K0zTH12yEqkYBj3-DKKYak-y5KVra/preview" width="640" height="480" allowfullscreen></iframe>
+- [Video Link](https://drive.google.com/file/d/1l-3K0zTH12yEqkYBj3-DKKYak-y5KVra/view?usp=sharing)
 
 ---
 
