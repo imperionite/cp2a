@@ -24,10 +24,9 @@ For foundational documentation, refer to the [cp1 repository](https://github.com
 - **Improved Modularity:** Decoupled backend and frontend for easier deployment and scalability.
 - **Updated Documentation:** Enhanced and updated documentation, with references to class diagrams ([see here](https://github.com/imperionite/cp2a/blob/main/CLASS_DIAGRAM.md)) and new features added in this phase.
 
+### **App Demo**
 
-### **Initial App Demo**
-
-- [Video Link](https://drive.google.com/file/d/1l-3K0zTH12yEqkYBj3-DKKYak-y5KVra/view?usp=sharing)
+<iframe src="https://drive.google.com/file/d/1l-3K0zTH12yEqkYBj3-DKKYak-y5KVra/preview" width="640" height="480" allowfullscreen></iframe>
 
 ---
 
